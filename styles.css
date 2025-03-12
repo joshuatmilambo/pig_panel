@@ -1,0 +1,15 @@
+.pigpanel-info-btn {
+  cursor: pointer;
+  background-color: black;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  padding: 2px 5px;
+  font-size: 12px;
+  margin-left: 6px;
+  z-index: 1000;
+}
+
+.pigpanel-info-btn:hover {
+  opacity: 0.8;
+}

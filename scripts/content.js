@@ -3,6 +3,7 @@
 //wait for page to load
 document.addEventListener("DOMContentLoaded", () => {
   injectInfoButtons();
+  observeDynamicChanges();
 })
 
 function injectInfoButtons() {
@@ -25,14 +26,34 @@ function injectInfoButtons() {
         //showPlayerPanel(playerSection);
       });
 
-    //Append button to player section
-    playerSection.parentNode.insertBefore(infoButton, playerSection.nextSibling);
+      const wrapper = document.createElement('div');
+      wrapper.style.display = "flex";
+      wrapper.style.alignItems = "center";
+      wrapper.style.justifyContent = "center"; // Keeps the name centered
+      wrapper.style.position = "relative";
+      wrapper.style.width = "100%";
+
+    // Insert wrapper and move elements inside
+    playerSection.parentNode.insertBefore(wrapper, playerSection);
+    wrapper.appendChild(playerSection);
+    wrapper.appendChild(infoButton);
     });
 }
 
 injectInfoButtons();
 
-function showPlayerPanel(playerSection) {
+function observeDynamicChanges() {
+  const observer = new MutationObserver(() => {
+    injectInfoButtons();
+  });
+
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+  });
+}
+
+/*function showPlayerPanel(playerSection) {
   const playerName = playerSelection.querySelector(".player-name")?.innerText || "Unknown Player";
   //Remove existing panel
   const existingPanel = document.getElementById("pigpanel-panel");
@@ -90,4 +111,4 @@ function observeDynamicChanges() {
       childList: true,
       subtree: true
   });
-}
+}*/
