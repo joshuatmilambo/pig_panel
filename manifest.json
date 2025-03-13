@@ -9,6 +9,11 @@
       "matches" : ["https://fantasy.afl.com.au/*"],
       "js": ["scripts/content.js"],
       "css": ["styles.css"]
+    },
+    {
+      "matches": ["https://dfsaustralia.com/*"],
+      "js": ["scripts/dfs-content.js"],
+      "run_at": "document_idle"
     }
   ],
   "icons" : {
@@ -19,5 +24,8 @@
   "web_accessible_resources" : [{
     "resources": [ "images/*.png" ],
     "matches": [ "<all_urls>" ]
-  }]
+  }],
+  "permissions" : [
+    "storage"
+  ]
 }

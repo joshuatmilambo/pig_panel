@@ -103,6 +103,8 @@ function showPlayerPanel(playerName) {
   const existingPanel = document.getElementById("pigpanel-panel");
   if (existingPanel) existingPanel.remove();
 
+  const dfsUrl = "https://dfsaustralia.com/afl-fantasy-player-summary"; // DFS URL
+
   //Create a new panel
   const panel = document.createElement("div");
     panel.id = "pigpanel-panel";
@@ -114,6 +116,7 @@ function showPlayerPanel(playerName) {
         </div>
         <div class="pigpanel-content">
             <p>Loading data for ${playerName}...</p>
+            <a href="${dfsUrl}" target="_blank" class="dfs-link">View DFS Stats</a>
         </div>
     `;
     // Style the panel (inline for now, but can be moved to styles.css)
@@ -127,21 +130,27 @@ function showPlayerPanel(playerName) {
     panel.style.zIndex = "1000";
     panel.style.boxShadow = "2px 2px 10px rgba(0, 0, 0, 0.2)";
 
-    // Close button functionality
-    panel.querySelector("#pigpanel-close").addEventListener("click", () => {
-        panel.remove();
-    });
-
-    // Append panel to the body
     document.body.appendChild(panel);
 
-    // Fetch player data (to be implemented)
-    //fetchPlayerData(playerName);
-}
-
-/**function fetchPlayerData(playerName) {
-  // This is where you can pull real player data from an API later
-  setTimeout(() => {
-      document.querySelector(".pigpanel-content").innerHTML = `<p>Stats and news coming soon for ${playerName}!</p>`;
-  }, 1000);
-}*/
+    // ✅ Now safely select the close button AFTER the panel is added
+    const closeButton = document.getElementById("pigpanel-close");
+    if (closeButton) {
+      closeButton.addEventListener("click", () => {
+        panel.remove();
+      });
+    } else {
+      console.error("Close button not found!");
+    }
+  
+    // ✅ Store player name in local storage when clicking DFS button
+    const dfsLink = panel.querySelector(".dfs-link");
+    if (dfsLink) {
+      dfsLink.addEventListener("click", () => {
+        chrome.storage.local.set({ selectedPlayerName: playerName }, () => {
+          console.log("Stored Player Name:", playerName);
+        });
+      });
+    } else {
+      console.error("DFS link not found!");
+    }
+  }

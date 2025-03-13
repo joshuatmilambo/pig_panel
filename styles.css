@@ -13,3 +13,18 @@
 .pigpanel-info-btn:hover {
   opacity: 0.8;
 }
+
+.dfs-link {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 5px 8px;
+  background-color: #333;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.dfs-link:hover {
+  background-color: #555;
+}
