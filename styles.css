@@ -52,6 +52,6 @@
   border-radius: 50%;
   border: none;
   cursor: pointer;
-  background: #eee;
+  background: rgba(238, 238, 238, 0.76);
   pointer-events: auto;
 }

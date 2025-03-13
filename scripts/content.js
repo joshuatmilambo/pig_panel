@@ -85,8 +85,19 @@ function observeDynamicChanges() {
   });
 }
 
+function cleanupPanel(panel, observer) {
+  if (panel) panel.remove();
+  observer.disconnect();
+  window.removeEventListener("scroll", updatePanelPosition);
+}
+
 function showPlayerPanel(playerSection, button) {
   //Remove existing panel
+  function updatePanelPosition() {
+    if (document.getElementById("pigpanel-panel")) {
+      positionPanel(panel);
+    }
+  }
   const existingPanel = document.getElementById("pigpanel-panel");
   if (existingPanel && existingPanel.dataset.player === playerSection.innerText) {
     existingPanel.remove();
@@ -111,11 +122,6 @@ function showPlayerPanel(playerSection, button) {
   panel.className = "pigpanel-panel";
   positionPanel(panel);
 
-  function updatePanelPosition() {
-    if (document.getElementById("pigpanel-panel")) {
-      positionPanel(panel);
-    }
-  }
   window.addEventListener("scroll", updatePanelPosition);
 
   // ✅ Detect if the player card's **parent** is changing (fix for flip issue)
@@ -139,7 +145,7 @@ function showPlayerPanel(playerSection, button) {
   const buttonData = [
     { label: "🔼", gridArea: "1 / 2" },  // Top-center
     { label: "F", gridArea: "1 / 3" },  // Top-right
-    { label: "🐷", gridArea: "2 / 3", action: () => {
+    { imgSrc: "images/dfs.png", gridArea: "2 / 3", action: () => {
       console.log(`🐷 DFS Button Clicked! Searching for ${playerName}`);
       chrome.storage.local.set({ selectedPlayerName: playerName }, () => {
         console.log("✅ Player name stored in Chrome storage.");
@@ -151,25 +157,45 @@ function showPlayerPanel(playerSection, button) {
     { label: "N", gridArea: "3 / 3" }   // Bottom-right
   ];
 
-  buttonData.forEach((btnData) => {
+  buttonData.forEach((btnData, index) => {
+    if (!btnData.label && !btnData.imgSrc) {
+        console.warn(`⚠️ Skipping button at ${btnData.gridArea || index} - Missing label and imgSrc`);
+        return;
+    }
+
     const btn = document.createElement("button");
-    btn.className = "pigpanel-panel-grid-btn"
-    btn.innerText = btnData.label;
+    btn.className = "pigpanel-panel-grid-btn";
     btn.style.gridArea = btnData.gridArea;
-    
+
+    // ✅ If an image is provided, use an <img> instead of text
+    if (btnData.imgSrc) {
+        const img = document.createElement("img");
+        img.src = chrome.runtime.getURL(btnData.imgSrc);  // Load image from extension
+        img.alt = btnData.label || "Icon";
+        img.className = "pigpanel-grid-btn-icon";  // Use CSS class for styling
+        btn.appendChild(img);
+    } else if (btnData.label) {
+        btn.innerText = btnData.label;
+    }
+
     // Assign custom action for each button
     btn.addEventListener("click", () => {
-      console.log(`Clicked button: ${btnData.label}`);
-      if (btnData.action) {  // ✅ Prevents errors for buttons without actions
-        btnData.action();
-      }
-      panel.remove(); // Close panel after clicking
-      observer.disconnect(); // Stop observing
-      window.removeEventListener("scroll", updatePanelPosition);
+        console.log(`🟢 Clicked button: ${btnData.label || btnData.imgSrc || "Unknown"}`);
+  
+        if (btnData.action) {
+            try {
+                btnData.action();
+            } catch (error) {
+                console.error(`❌ Error executing action for ${btnData.label || btnData.imgSrc}:`, error);
+            }
+        }
+  
+        panel.remove();
+        observer.disconnect();
+        window.removeEventListener("scroll", updatePanelPosition);
     });
 
-    panel.appendChild(btn);
-    
+    panel.appendChild(btn); 
   });
 
   document.body.appendChild(panel);
