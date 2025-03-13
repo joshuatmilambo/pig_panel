@@ -106,6 +106,7 @@ function showPlayerPanel(playerName) {
   //Create a new panel
   const panel = document.createElement("div");
     panel.id = "pigpanel-panel";
+    panel.dataset.player = playerName;
     panel.innerHTML = `
         <div class="pigpanel-header">
             <h3>${playerName}</h3>
