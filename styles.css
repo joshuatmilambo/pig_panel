@@ -1,6 +1,6 @@
 .pigpanel-info-btn {
   cursor: pointer;
-  background-color: black;
+  background: none;
   color: white;
   border: none;
   border-radius: 3px;

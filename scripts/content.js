@@ -1,10 +1,12 @@
 
 
 //wait for page to load
-document.addEventListener("DOMContentLoaded", () => {
-  injectInfoButtons();
-  observeDynamicChanges();
-})
+window.addEventListener("load", () => {
+  setTimeout(() => {
+    injectInfoButtons();
+    observeDynamicChanges();
+  }, 1000);
+});
 
 function injectInfoButtons() {
   //select all player sections
@@ -12,21 +14,32 @@ function injectInfoButtons() {
 
     playerSections.forEach((playerSection) => {
       //Avoid adding duplicate buttons
-      if (playerSection.querySelector(".pigpanel-info-btn")) return;
+      if (playerSection.closest('.pigpanel-wrapper')) return;
 
       //create the info button
       const infoButton = document.createElement("button");
-      infoButton.innerText = "i"; //unicode info can replace with image
       infoButton.className = "pigpanel-info-btn";
+
+      // Create image element for the icon
+      const iconImg = document.createElement("img");
+      iconImg.src = chrome.runtime.getURL("images/pig_16.png"); // load from extension
+      iconImg.alt = "Info";
+      iconImg.style.width = "16px";
+      iconImg.style.height = "16px";
+      iconImg.style.display = "block";
+
+      // Append image to button
+      infoButton.appendChild(iconImg);
 
       //Add click event listener
       infoButton.addEventListener("click", (event) => {
         event.stopPropagation();
         console.log("Button clicked for player:", playerSection.innerText);
-        //showPlayerPanel(playerSection);
+        showPlayerPanel(playerSection.innerText);
       });
 
       const wrapper = document.createElement('div');
+      wrapper.className = "pigpanel-wrapper";
       wrapper.style.display = "flex";
       wrapper.style.alignItems = "center";
       wrapper.style.justifyContent = "center"; // Keeps the name centered
@@ -40,11 +53,29 @@ function injectInfoButtons() {
     });
 }
 
-injectInfoButtons();
-
 function observeDynamicChanges() {
-  const observer = new MutationObserver(() => {
-    injectInfoButtons();
+  const observer = new MutationObserver((mutations) => {
+    let shouldInject = false;
+
+    for (const mutation of mutations) {
+      if (mutation.addedNodes.length) {
+        shouldInject = true;
+        break;
+      }
+    }
+
+    if (shouldInject) {
+      // Disconnect observer temporarily to avoid recursive calls
+      observer.disconnect();
+
+      // Safely inject buttons
+      injectInfoButtons();
+
+      // Reconnect observer after brief delay
+      setTimeout(() => {
+        observeDynamicChanges();
+      }, 1000);
+    }
   });
 
   observer.observe(document.body, {
@@ -53,8 +84,7 @@ function observeDynamicChanges() {
   });
 }
 
-/*function showPlayerPanel(playerSection) {
-  const playerName = playerSelection.querySelector(".player-name")?.innerText || "Unknown Player";
+function showPlayerPanel(playerName) {
   //Remove existing panel
   const existingPanel = document.getElementById("pigpanel-panel");
   if (existingPanel) existingPanel.remove();
@@ -91,24 +121,12 @@ function observeDynamicChanges() {
     document.body.appendChild(panel);
 
     // Fetch player data (to be implemented)
-    fetchPlayerData(playerName);
+    //fetchPlayerData(playerName);
 }
 
-function fetchPlayerData(playerName) {
+/**function fetchPlayerData(playerName) {
   // This is where you can pull real player data from an API later
   setTimeout(() => {
       document.querySelector(".pigpanel-content").innerHTML = `<p>Stats and news coming soon for ${playerName}!</p>`;
   }, 1000);
-}
-
-// Detect dynamically loaded player sections
-function observeDynamicChanges() {
-  const observer = new MutationObserver(() => {
-      injectInfoButtons(); // Re-check and add buttons when new players appear
-  });
-
-  observer.observe(document.body, {
-      childList: true,
-      subtree: true
-  });
 }*/
