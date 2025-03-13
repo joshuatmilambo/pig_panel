@@ -27,3 +27,31 @@
   position: relative;
   width: 100%;
 }
+
+.pigpanel-panel {
+  position: absolute;
+  width: 120px; /* Same as panelSize */
+  height: 120px; /* Same as panelSize */
+  background: rgba(255, 255, 255, 0); /* Light transparency */
+  border: none;
+  border-radius: 10px;
+  padding: 5px;
+  z-index: 1000;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  place-items: center;
+  gap: 5px;
+  pointer-events: none; /* Prevents interaction */
+}
+
+.pigpanel-panel-grid-btn {
+  width: 30px;
+  height: 30px;
+  font-size: 18px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  background: #eee;
+  pointer-events: auto;
+}

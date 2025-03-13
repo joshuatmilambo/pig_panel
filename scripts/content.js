@@ -110,26 +110,8 @@ function showPlayerPanel(playerSection, button) {
   const panel = document.createElement("div");
   panel.id = "pigpanel-panel";
   panel.dataset.player = playerName;
-
-  // Style the panel (inline for now, but can be moved to styles.css)
-  panel.style.position = "absolute";
-  panel.style.top = `${buttonRect.top + window.scrollY - (panelSize / 2) + (buttonRect.height / 2)}px`; // Center on button
-  panel.style.left = `${buttonRect.left + window.scrollX - (panelSize / 2) + (buttonRect.width / 2)}px`; // Center on button
-  panel.style.width = `${panelSize}px`;
-  panel.style.height = `${panelSize}px`;
-  panel.style.background = "rgba(255, 255, 255, 0)"; // Light transparency
-  panel.style.border = "none";
-  panel.style.borderRadius = "10px";
-  panel.style.padding = "5px";
-  panel.style.zIndex = "1000";
-  panel.style.display = "grid";
-  panel.style.gridTemplateColumns = "repeat(3, 1fr)";
-  panel.style.gridTemplateRows = "repeat(3, 1fr)";
-  panel.style.placeItems = "center";
-  panel.style.gap = "5px";
-  panel.style.pointerEvents = "none";
-
-  positionPanel(panel); // ✅ Set initial position
+  panel.className = "pigpanel-panel";
+  positionPanel(panel);
 
   // ✅ Move panel on scroll
   function updatePanelPosition() {
@@ -175,16 +157,9 @@ function showPlayerPanel(playerSection, button) {
 
   buttonData.forEach((btnData) => {
     const btn = document.createElement("button");
+    btn.className = "pigpanel-panel-grid-btn"
     btn.innerText = btnData.label;
-    btn.style.width = "30px";
-    btn.style.height = "30px";
-    btn.style.fontSize = "18px";
-    btn.style.borderRadius = "50%";
-    btn.style.border = "none";
-    btn.style.cursor = "pointer";
-    btn.style.background = "#eee";
     btn.style.gridArea = btnData.gridArea;
-    btn.style.pointerEvents = "auto"
     
     // Assign custom action for each button
     btn.addEventListener("click", () => {
