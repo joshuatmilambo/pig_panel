@@ -96,12 +96,10 @@ function showPlayerPanel(playerSection, button) {
 
   const playerName = playerSection.innerText;
 
-  // Get the button position to place panel beside it
-  const buttonRect = button.getBoundingClientRect();
-  const panelSize = 120;
-
   // Function to position the panel correctly
   function positionPanel(panel) {
+    const buttonRect = button.getBoundingClientRect();
+    const panelSize = 120;
     panel.style.top = `${buttonRect.top + window.scrollY - (panelSize / 2) + (buttonRect.height / 2)}px`;
     panel.style.left = `${buttonRect.left + window.scrollX - (panelSize / 2) + (buttonRect.width / 2)}px`;
   }
@@ -113,12 +111,10 @@ function showPlayerPanel(playerSection, button) {
   panel.className = "pigpanel-panel";
   positionPanel(panel);
 
-  // ✅ Move panel on scroll
   function updatePanelPosition() {
-      const existingPanel = document.getElementById("pigpanel-panel");
-      if (existingPanel) {
-          positionPanel(existingPanel);
-      }
+    if (document.getElementById("pigpanel-panel")) {
+      positionPanel(panel);
+    }
   }
   window.addEventListener("scroll", updatePanelPosition);
 
