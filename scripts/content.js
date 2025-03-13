@@ -25,9 +25,6 @@ function injectInfoButtons() {
     iconImg.className = "pigpanel-info-btn-icon"
     iconImg.src = chrome.runtime.getURL("images/pig_48.png"); // load from extension
     iconImg.alt = "Info";
-    iconImg.style.width = "20px";
-    iconImg.style.height = "20px";
-    iconImg.style.display = "block";
 
     // Append image to button
     infoButton.appendChild(iconImg);
@@ -49,11 +46,6 @@ function injectInfoButtons() {
 
     const wrapper = document.createElement('div');
     wrapper.className = "pigpanel-wrapper";
-    wrapper.style.display = "flex";
-    wrapper.style.alignItems = "center";
-    wrapper.style.justifyContent = "center"; // Keeps the name centered
-    wrapper.style.position = "relative";
-    wrapper.style.width = "100%";
 
     // Insert wrapper and move elements inside
     playerSection.parentNode.insertBefore(wrapper, playerSection);

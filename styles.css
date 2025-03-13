@@ -19,3 +19,11 @@
   height: 20px;
   display: block;
 }
+
+.pigpanel-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Keeps the name centered */
+  position: relative;
+  width: 100%;
+}
