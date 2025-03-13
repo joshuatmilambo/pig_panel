@@ -19,13 +19,6 @@ function injectInfoButtons() {
     //create the info button
     const infoButton = document.createElement("button");
     infoButton.className = "pigpanel-info-btn";
-    infoButton.style.backgroundColor = "transparent";
-    infoButton.style.border = "none";
-    infoButton.style.cursor = "pointer";
-    infoButton.style.position = "absolute";
-    infoButton.style.right = "7px";
-    infoButton.style.top = "-50%";
-    infoButton.style.transform = "translateY(-50%)";
 
     // Create image element for the icon
     const iconImg = document.createElement("img");
