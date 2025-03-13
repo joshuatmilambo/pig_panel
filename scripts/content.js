@@ -22,6 +22,7 @@ function injectInfoButtons() {
 
     // Create image element for the icon
     const iconImg = document.createElement("img");
+    iconImg.className = "pigpanel-info-btn-icon"
     iconImg.src = chrome.runtime.getURL("images/pig_48.png"); // load from extension
     iconImg.alt = "Info";
     iconImg.style.width = "20px";
