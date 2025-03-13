@@ -144,7 +144,13 @@ function showPlayerPanel(playerSection, button) {
 
   const buttonData = [
     { label: "🔼", gridArea: "1 / 2" },  // Top-center
-    { label: "F", gridArea: "1 / 3" },  // Top-right
+    { label: "FW", gridArea: "1 / 3", action: () => {
+      console.log(`FW Button Clicked! Searching for ${playerName}`);
+      chrome.storage.local.set({ selectedPlayerName: playerName }, () => {
+        console.log("✅ Player name stored in Chrome storage.");
+        window.open("https://www.footywire.com/afl/footy/player_search/", "_blank");
+        })
+      }},  // Top-right
     { imgSrc: "images/dfs.png", gridArea: "2 / 3", action: () => {
       console.log(`🐷 DFS Button Clicked! Searching for ${playerName}`);
       chrome.storage.local.set({ selectedPlayerName: playerName }, () => {
