@@ -19,13 +19,20 @@ function injectInfoButtons() {
       //create the info button
       const infoButton = document.createElement("button");
       infoButton.className = "pigpanel-info-btn";
+      infoButton.style.backgroundColor = "transparent";
+      infoButton.style.border = "none";
+      infoButton.style.cursor = "pointer";
+      infoButton.style.position = "absolute";
+      infoButton.style.right = "7px";
+      infoButton.style.top = "-50%";
+      infoButton.style.transform = "translateY(-50%)";
 
       // Create image element for the icon
       const iconImg = document.createElement("img");
-      iconImg.src = chrome.runtime.getURL("images/pig_16.png"); // load from extension
+      iconImg.src = chrome.runtime.getURL("images/pig_48.png"); // load from extension
       iconImg.alt = "Info";
-      iconImg.style.width = "16px";
-      iconImg.style.height = "16px";
+      iconImg.style.width = "20px";
+      iconImg.style.height = "20px";
       iconImg.style.display = "block";
 
       // Append image to button
@@ -34,8 +41,15 @@ function injectInfoButtons() {
       //Add click event listener
       infoButton.addEventListener("click", (event) => {
         event.stopPropagation();
-        console.log("Button clicked for player:", playerSection.innerText);
-        showPlayerPanel(playerSection.innerText);
+  
+        const existingPanel = document.getElementById("pigpanel-panel");
+      
+        // Check if panel already exists and is for the same player
+        if (existingPanel && existingPanel.dataset.player === playerSection.innerText) {
+          existingPanel.remove();  // Close if same player is clicked again
+        } else {
+          showPlayerPanel(playerSection.innerText);  // Otherwise, show new panel
+        }
       });
 
       const wrapper = document.createElement('div');
