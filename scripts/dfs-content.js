@@ -44,45 +44,32 @@ function startPlayerSelection() {
     waitForSearchBox((inputElement) => {
       observer.disconnect(); // ✅ Stop observing after input field is found
       inputElement.focus();
-      inputElement.value = ""; // Clear existing text
+      inputElement.value = selectedPlayerName; // ✅ Directly set full name
 
-      let index = 0;
-      function typeNextLetter() {
-        if (index < selectedPlayerName.length) {
-          console.log(`Typing: ${selectedPlayerName[index]}`);
-          const keyEvent = new KeyboardEvent("keydown", { key: selectedPlayerName[index], bubbles: true });
-          inputElement.dispatchEvent(keyEvent);
+      // ✅ Trigger real events so DFS processes the change
+      inputElement.dispatchEvent(new Event("input", { bubbles: true }));
+      inputElement.dispatchEvent(new Event("change", { bubbles: true }));
+      console.log("✅ Full name pasted into search box!");
 
-          inputElement.value += selectedPlayerName[index]; // Append letter to value
-          inputElement.dispatchEvent(new Event("input", { bubbles: true })); // Trigger input event
+      setTimeout(() => {
+        // Step 3: Click the highlighted player option
+        const activeOption = document.querySelector(".ts-dropdown-content .option.active");
+        console.log("🔍 Found active option:", activeOption);
 
-          index++;
-          setTimeout(typeNextLetter, 100);
+        if (activeOption) {
+          console.log("✅ Clicking active option:", activeOption.innerText);
+          activeOption.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+          activeOption.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
+          activeOption.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+
+          // ✅ Prevent looping by clearing storage after selection
+          chrome.storage.local.remove("selectedPlayerName", () => {
+            console.log("🛑 Removed player name from storage to stop looping.");
+          });
         } else {
-          console.log("✅ Finished typing player name!");
-          setTimeout(() => {
-            // Step 3: Click the highlighted player option
-            const activeOption = document.querySelector(".ts-dropdown-content .option.active");
-            console.log("🔍 Found active option:", activeOption);
-
-            if (activeOption) {
-              console.log("✅ Clicking active option:", activeOption.innerText);
-              activeOption.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
-              activeOption.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
-              activeOption.dispatchEvent(new MouseEvent("click", { bubbles: true }));
-
-              // ✅ Prevent looping by clearing storage after selection
-              chrome.storage.local.remove("selectedPlayerName", () => {
-                console.log("🛑 Removed player name from storage to stop looping.");
-              });
-            } else {
-              console.error("❌ No active player found in dropdown.");
-            }
-          }, 500);
+          console.error("❌ No active player found in dropdown.");
         }
-      }
-
-      typeNextLetter();
+      }, 500);
     });
   });
 }
