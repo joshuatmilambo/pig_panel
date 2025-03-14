@@ -144,14 +144,27 @@ function showPlayerPanel(playerSection, button) {
 
   const buttonData = [
     { label: "🔼", gridArea: "1 / 2" },  // Top-center
-    { label: "FW", gridArea: "1 / 3", action: () => {
-      console.log(`FW Button Clicked! Searching for ${playerName}`);
-      chrome.storage.local.set({ selectedPlayerName: playerName }, () => {
-        console.log("✅ Player name stored in Chrome storage.");
-        window.open("https://www.footywire.com/afl/footy/player_search/", "_blank");
-        })
-      }},  // Top-right
-    { imgSrc: "images/dfs.png", gridArea: "2 / 3", action: () => {
+    {
+      label: "FW", gridArea: "1 / 3", 
+      action: () => {
+        console.log(`FW Button Clicked! Searching for ${playerName}`);
+    
+        chrome.storage.local.set({ selectedPlayerName: playerName }, () => {
+          console.log("✅ Player name stored in Chrome storage.");
+          
+          const nameParts = playerName.trim().split(" ");
+          const firstName = nameParts[0];
+          const lastNames = nameParts.slice(1).join("+"); // Convert spaces in last name to `+`
+    
+          const searchUrl = `https://www.footywire.com/afl/footy/player_search?fn=${firstName}&ln=${lastNames}`;
+          console.log(`🔗 Redirecting to: ${searchUrl}`);
+    
+          window.open(searchUrl, "_blank");
+        });
+      }
+    }, 
+    { imgSrc: "images/dfs.png", gridArea: "2 / 3", 
+      action: () => {
       console.log(`🐷 DFS Button Clicked! Searching for ${playerName}`);
       chrome.storage.local.set({ selectedPlayerName: playerName }, () => {
         console.log("✅ Player name stored in Chrome storage.");
