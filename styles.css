@@ -30,21 +30,22 @@
 
 .pigpanel-panel {
   position: absolute;
-  width: 120px; /* Same as panelSize */
-  height: 120px; /* Same as panelSize */
-  background: rgba(255, 255, 255, 0); /* Light transparency */
+  width: 120px; /* Adjust size as needed */
+  height: 120px;
+  background: rgba(255, 255, 255, 0); /* Fully transparent */
   border: none;
   border-radius: 10px;
   padding: 5px;
-  z-index: 1000;
+  z-index: 1000; /* Panel is beneath buttons */
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
   place-items: center;
   gap: 5px;
-  pointer-events: none; /* Prevents interaction */
+  pointer-events: none; /* ✅ Prevents the panel from intercepting clicks */
 }
 
+/* 🔹 The buttons inside the panel */
 .pigpanel-panel-grid-btn {
   width: 30px;
   height: 30px;
@@ -52,6 +53,18 @@
   border-radius: 50%;
   border: none;
   cursor: pointer;
-  background: rgba(238, 238, 238, 0.76);
-  pointer-events: auto;
+  background: #eee;
+  pointer-events: auto; /* ✅ Allows clicking the buttons */
+  position: relative;  /* ✅ Ensures it's above the panel */
+  z-index: 2000; /* ✅ Higher than the panel */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+/* 🔹 Hover effect for buttons */
+.pigpanel-panel-grid-btn:hover {
+  background: #ccc; /* Slightly darker background on hover */
+  transform: scale(1.1); /* Small scaling effect for feedback */
 }

@@ -144,7 +144,7 @@ function showPlayerPanel(playerSection, button) {
 
   const buttonData = [
     { 
-      imgSrc: "images/dfs.png", gridArea: "1 / 3", // Bottom-right
+      imgSrc: "images/dfs.png", gridArea: "1 / 2", // Bottom-right
       action: () => {
       console.log(`DFS Button Clicked! Searching for ${playerName}`);
       chrome.storage.local.set({ selectedPlayerName: playerName }, () => {
@@ -154,7 +154,7 @@ function showPlayerPanel(playerSection, button) {
       }
     },
     {
-      imgSrc: "images/footywire.png", gridArea: "3 / 3", 
+      imgSrc: "images/footywire.png", gridArea: "3 / 2", 
       action: () => {
         console.log(`FW Button Clicked! Searching for ${playerName}`);
     
