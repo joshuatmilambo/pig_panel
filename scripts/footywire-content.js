@@ -1,21 +1,19 @@
 console.log("✅ footywire-content.js is running!");
 
-// Ensure the script runs only when FW is fully loaded
+// ✅ Detect if on the correct search page
 function runWhenReady() {
-  if (document.readyState === "complete") {
-    console.log("✅ FW page fully loaded!");
+  const currentUrl = window.location.href;
+  console.log(`🌐 Current URL: ${currentUrl}`);
+
+  if (/\/player_search\/?$/.test(currentUrl)) {
+    console.log("🔍 On player search page. Starting selection...");
     startPlayerSelection();
   } else {
-    console.log("⏳ FW page still loading... waiting...");
-    document.addEventListener("readystatechange", () => {
-      if (document.readyState === "complete") {
-        console.log("✅ FW page fully loaded on second check!");
-        startPlayerSelection();
-      }
-    });
+    console.log("⚠️ Not on the correct player search page. No action taken.");
   }
 }
 
+// ✅ Fill in search fields and press Enter to search
 function startPlayerSelection() {
   chrome.storage.local.get("selectedPlayerName", ({ selectedPlayerName }) => {
     if (!selectedPlayerName) {
@@ -23,7 +21,7 @@ function startPlayerSelection() {
       return;
     }
 
-    console.log("✅ Retrieved player from storage:", selectedPlayerName);
+    console.log(`✅ Retrieved player: ${selectedPlayerName}`);
 
     const nameParts = selectedPlayerName.trim().split(" ");
     const firstName = nameParts[0];
@@ -32,76 +30,62 @@ function startPlayerSelection() {
     console.log(`🔹 First Name: ${firstName}`);
     console.log(`🔹 Last Name(s): ${lastNames}`);
 
-    let observer;
-
-    function waitForSearchBox(callback) {
-      console.log("⏳ Waiting for search input field...");
-      observer = new MutationObserver((mutations, obs) => {
-        const nameInputs = document.querySelectorAll(".textinput"); // Replace with actual class name
-        if (nameInputs.length >= 2) {
-          console.log("✅ Search input fields found!");
-
-          const firstNameInput = nameInputs[0]; // First input field
-          const lastNameInput = nameInputs[1]; // Second input field
-
-          obs.disconnect(); // Stop observing once the inputs appear
-          callback(firstNameInput, lastNameInput);
-        }
-      });
-
-      observer.observe(document.body, { childList: true, subtree: true });
-    }
-
-    waitForSearchBox((inputElement) => {
-      observer.disconnect(); // ✅ Stop observing after input field is found
+    waitForSearchBoxes((firstNameInput, lastNameInput) => {
+      console.log("✅ Filling in search fields...");
 
       firstNameInput.focus();
       firstNameInput.value = firstName;
       firstNameInput.dispatchEvent(new Event("input", { bubbles: true }));
+
       setTimeout(() => {
         lastNameInput.focus();
         lastNameInput.value = lastNames;
         lastNameInput.dispatchEvent(new Event("input", { bubbles: true }));
 
-        // ✅ Trigger search after entering last name
-        triggerSearch();
-      }, 300);  // Small delay to simulate typing
+        console.log("✅ Name entered. Pressing Enter to search...");
+
+        setTimeout(() => {
+          triggerSearchWithEnter(lastNameInput);
+        }, 500); // Small delay before pressing Enter
+      }, 500);
     });
   });
 }
 
-function triggerSearch() {
-  const searchButton = document.querySelector(".button"); // Replace with actual selector
+// ✅ Wait for search input fields to appear
+function waitForSearchBoxes(callback) {
+  console.log("⏳ Waiting for search input fields...");
 
-  if (searchButton) {
-    console.log("✅ Clicking search button.");
-    searchButton.click();
-  } else {
-    console.warn("⚠️ No search button found, trying Enter key.");
-    const lastNameInput = document.querySelector(".textinput:last-of-type"); // Assuming last input triggers search
-    if (lastNameInput) {
-      lastNameInput.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
-      lastNameInput.dispatchEvent(new KeyboardEvent("keyup", { key: "Enter", bubbles: true }));
+  function checkInputs() {
+    const firstNameInput = document.querySelector("input[name='fn']");
+    const lastNameInput = document.querySelector("input[name='ln']");
+    
+    if (firstNameInput && lastNameInput) {
+      console.log("✅ Search input fields found!");
+      callback(firstNameInput, lastNameInput);
+      return true;
     }
+    return false;
   }
 
-  // ✅ Wait for results to appear, then select first result
-  setTimeout(() => {
-    const playerLinks = Array.from(document.querySelectorAll("a")); // Select all links
-    const selectedPlayer = lastNames + ", " + firstName; // Replace with dynamic player name
+  if (checkInputs()) return;
 
-    const firstMatch = playerLinks.find(link => 
-        link.innerText.trim().toLowerCase() === selectedPlayer.toLowerCase()
-    );
+  console.log("👀 Watching for input fields...");
+  const observer = new MutationObserver(() => {
+    if (checkInputs()) observer.disconnect();
+  });
 
-    if (firstMatch) {
-        console.log(`✅ Clicking result: ${firstMatch.innerText}`);
-        firstMatch.click();
-    } else {
-        console.error("❌ No matching player found.");
-    }
-  }, 1000);
+  observer.observe(document.body, { childList: true, subtree: true });
 }
 
-// Start the script when the page is ready
+// ✅ Press Enter key on the Last Name input field
+function triggerSearchWithEnter(lastNameInput) {
+  console.log("🔎 Pressing Enter to trigger search...");
+
+  lastNameInput.focus();
+  lastNameInput.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+  lastNameInput.dispatchEvent(new KeyboardEvent("keyup", { key: "Enter", bubbles: true }));
+}
+
+// ✅ Start script when page is ready
 runWhenReady();

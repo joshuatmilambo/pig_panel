@@ -14,6 +14,11 @@
       "matches": ["https://dfsaustralia.com/*"],
       "js": ["scripts/dfs-content.js"],
       "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://www.footywire.com/afl/footy/player_search*"],
+      "js": ["scripts/footywire-content.js"],
+      "run_at": "document_idle"
     }
   ],
   "icons" : {
