@@ -1,6 +1,5 @@
 console.log("✅ dfs-content.js is running!");
 
-// Ensure the script runs only when DFS is fully loaded
 function runWhenReady() {
   if (document.readyState === "complete") {
     console.log("✅ DFS page fully loaded!");
@@ -22,6 +21,15 @@ function startPlayerSelection() {
       console.log("❌ No player name found in storage.");
       return;
     }
+
+    console.log("🗑️ Clearing stored player name...");
+    chrome.storage.local.remove("selectedPlayerName", () => {
+      if (chrome.runtime.lastError) {
+        console.error("❌ Error clearing stored player name:", chrome.runtime.lastError);
+      } else {
+        console.log("✅ Stored player name removed from Chrome storage.");
+      }
+    });
 
     console.log("✅ Retrieved player from storage:", selectedPlayerName);
 

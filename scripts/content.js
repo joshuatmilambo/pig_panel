@@ -143,9 +143,18 @@ function showPlayerPanel(playerSection, button) {
   }
 
   const buttonData = [
-    { label: "🔼", gridArea: "1 / 2" },  // Top-center
+    { 
+      imgSrc: "images/dfs.png", gridArea: "1 / 3", // Bottom-right
+      action: () => {
+      console.log(`🐷 DFS Button Clicked! Searching for ${playerName}`);
+      chrome.storage.local.set({ selectedPlayerName: playerName }, () => {
+        console.log("✅ Player name stored in Chrome storage.");
+        window.open("https://dfsaustralia.com/afl-fantasy-player-summary/", "_blank");
+        })
+      }
+    },
     {
-      label: "FW", gridArea: "1 / 3", 
+      label: "FW", gridArea: "3 / 3", 
       action: () => {
         console.log(`FW Button Clicked! Searching for ${playerName}`);
     
@@ -162,18 +171,7 @@ function showPlayerPanel(playerSection, button) {
           window.open(searchUrl, "_blank");
         });
       }
-    }, 
-    { imgSrc: "images/dfs.png", gridArea: "2 / 3", 
-      action: () => {
-      console.log(`🐷 DFS Button Clicked! Searching for ${playerName}`);
-      chrome.storage.local.set({ selectedPlayerName: playerName }, () => {
-        console.log("✅ Player name stored in Chrome storage.");
-        window.open("https://dfsaustralia.com/afl-fantasy-player-summary/", "_blank");
-        })
-      }
-    },  // Center-right
-    { label: "🔽", gridArea: "3 / 2" },  // Bottom-center
-    { label: "N", gridArea: "3 / 3" }   // Bottom-right
+    }
   ];
 
   buttonData.forEach((btnData, index) => {
