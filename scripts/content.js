@@ -146,7 +146,7 @@ function showPlayerPanel(playerSection, button) {
     { 
       imgSrc: "images/dfs.png", gridArea: "1 / 3", // Bottom-right
       action: () => {
-      console.log(`🐷 DFS Button Clicked! Searching for ${playerName}`);
+      console.log(`DFS Button Clicked! Searching for ${playerName}`);
       chrome.storage.local.set({ selectedPlayerName: playerName }, () => {
         console.log("✅ Player name stored in Chrome storage.");
         window.open("https://dfsaustralia.com/afl-fantasy-player-summary/", "_blank");
@@ -154,7 +154,7 @@ function showPlayerPanel(playerSection, button) {
       }
     },
     {
-      label: "FW", gridArea: "3 / 3", 
+      imgSrc: "images/footywire.png", gridArea: "3 / 3", 
       action: () => {
         console.log(`FW Button Clicked! Searching for ${playerName}`);
     
