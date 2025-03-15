@@ -87,60 +87,53 @@ function observeDynamicChanges() {
 
 function cleanupPanel(panel, observer) {
   if (panel) panel.remove();
-  observer.disconnect();
+  if (observer) observer.disconnect();
   window.removeEventListener("scroll", updatePanelPosition);
+}
+
+function updatePanelPosition(button, panel) {
+  if (!panel || !button) return; // ✅ Exit if panel or button doesn't exist
+
+  const buttonRect = button.getBoundingClientRect();
+  const panelSize = 120;
+  panel.style.top = `${buttonRect.top + window.scrollY - (panelSize / 2) + (buttonRect.height / 2)}px`;
+  panel.style.left = `${buttonRect.left + window.scrollX - (panelSize / 2) + (buttonRect.width / 2)}px`;
 }
 
 function showPlayerPanel(playerSection, button) {
   //Remove existing panel
-  function updatePanelPosition() {
-    if (document.getElementById("pigpanel-panel")) {
-      positionPanel(panel);
-    }
-  }
   const existingPanel = document.getElementById("pigpanel-panel");
   if (existingPanel && existingPanel.dataset.player === playerSection.innerText) {
-    existingPanel.remove();
-    window.removeEventListener("scroll", updatePanelPosition);
+    cleanupPanel(existingPanel, observer)
     return;
   }
 
   const playerName = playerSection.innerText;
-
-  // Function to position the panel correctly
-  function positionPanel(panel) {
-    const buttonRect = button.getBoundingClientRect();
-    const panelSize = 120;
-    panel.style.top = `${buttonRect.top + window.scrollY - (panelSize / 2) + (buttonRect.height / 2)}px`;
-    panel.style.left = `${buttonRect.left + window.scrollX - (panelSize / 2) + (buttonRect.width / 2)}px`;
-  }
 
   //Create a new panel
   const panel = document.createElement("div");
   panel.id = "pigpanel-panel";
   panel.dataset.player = playerName;
   panel.className = "pigpanel-panel";
-  positionPanel(panel);
+  updatePanelPosition(button, panel);
 
   window.addEventListener("scroll", updatePanelPosition);
 
-  // ✅ Detect if the player card's **parent** is changing (fix for flip issue)
-  const parentElement = playerSection.parentNode;
-  let closeTimeout;
+// ✅ Detect if the player card's **parent** is changing (fix for flip issue)
+const parentElement = playerSection.parentNode;
+let parentObserver = new MutationObserver((mutations) => {
+    for (const mutation of mutations) {
+        if (mutation.type === "attributes" || mutation.type === "childList") {
+            console.log("⚠️ Player card flipped or modified! Closing panel.");
+            cleanupPanel(panel, parentObserver)
+            return; // Exit to avoid unnecessary checks
+        }
+    }
+});
 
-  const observer = new MutationObserver((mutations) => {
-    clearTimeout(closeTimeout);
-    closeTimeout = setTimeout(() => {
-        console.log("⚠️ Player card flipped! Closing panel.");
-        panel.remove();
-        observer.disconnect();
-        window.removeEventListener("scroll", updatePanelPosition);
-    }, 100);
-  });
-
-  if (parentElement) {
-      observer.observe(parentElement, { attributes: true, childList: true, subtree: true });
-  }
+if (parentElement) {
+    parentObserver.observe(parentElement, { attributes: true, childList: true, subtree: true });
+}
 
   const buttonData = [
     { 
@@ -207,9 +200,7 @@ function showPlayerPanel(playerSection, button) {
             }
         }
   
-        panel.remove();
-        observer.disconnect();
-        window.removeEventListener("scroll", updatePanelPosition);
+        cleanupPanel(panel, parentObserver)
     });
 
     panel.appendChild(btn); 
@@ -221,9 +212,7 @@ function showPlayerPanel(playerSection, button) {
   setTimeout(() => {
       document.addEventListener("click", (event) => {
           if (!panel.contains(event.target) && event.target !== button) {
-              panel.remove();
-              observer.disconnect(); // Stop observing
-              window.removeEventListener("scroll", updatePanelPosition);
+            cleanupPanel(panel, parentObserver)
           }
       }, { once: true });
   }, 50);
