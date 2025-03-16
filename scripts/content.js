@@ -1,4 +1,20 @@
+async function fetchPlayersData() {
+  const response = await fetch("https://fantasy.afl.com.au/data/afl/players.json");
+  const players = await response.json();
+  return players;
+}
 
+const players = fetchPlayersData();
+
+const playerText = "R. Marshall"; // Example UI name
+const playerPriceText = "$1.201M"; // Example UI price
+
+findPlayerId(playerText, playerPriceText).then(playerId => {
+    if (playerId) {
+        console.log(`🔍 Player ID for ${playerText} with price ${playerPriceText} is ${playerId}`);
+        // Now you can use this ID for further queries
+    }
+});
 
 //wait for page to load
 window.addEventListener("load", () => {
@@ -10,9 +26,11 @@ window.addEventListener("load", () => {
 
 function injectInfoButtons() {
   //select all player sections
-  const playerSections = document.querySelectorAll("div[class*='sc-erIqft']");
+  const playerSectionsIn = document.querySelectorAll("div[class*='sc-erIqft']");
+  //const playerSectionsOut = document.querySelectorAll("div[class*='sc-dWQOTo iAaVmD playwright-mask-hidden']");
+  //const playerSections = [...playerSectionsIn, ...playerSectionsOut];
 
-  playerSections.forEach((playerSection) => {
+  playerSectionsIn.forEach((playerSection) => {
     //Avoid adding duplicate buttons
     if (playerSection.closest('.pigpanel-wrapper')) return;
 
@@ -83,21 +101,6 @@ function observeDynamicChanges() {
     childList: true,
     subtree: true,
   });
-}
-
-function cleanupPanel(panel, observer) {
-  if (panel) panel.remove();
-  if (observer) observer.disconnect();
-  window.removeEventListener("scroll", updatePanelPosition);
-}
-
-function updatePanelPosition(button, panel) {
-  if (!panel || !button) return; // ✅ Exit if panel or button doesn't exist
-
-  const buttonRect = button.getBoundingClientRect();
-  const panelSize = 120;
-  panel.style.top = `${buttonRect.top + window.scrollY - (panelSize / 2) + (buttonRect.height / 2)}px`;
-  panel.style.left = `${buttonRect.left + window.scrollX - (panelSize / 2) + (buttonRect.width / 2)}px`;
 }
 
 function showPlayerPanel(playerSection, button) {
@@ -217,4 +220,69 @@ if (parentElement) {
       }, { once: true });
   }, 50);
 
+}
+
+//Helper functions
+function cleanupPanel(panel, observer) {
+  if (panel) panel.remove();
+  if (observer) observer.disconnect();
+  window.removeEventListener("scroll", updatePanelPosition);
+}
+
+function updatePanelPosition(button, panel) {
+  if (!panel || !button) return; // ✅ Exit if panel or button doesn't exist
+
+  const buttonRect = button.getBoundingClientRect();
+  const panelSize = 120;
+  panel.style.top = `${buttonRect.top + window.scrollY - (panelSize / 2) + (buttonRect.height / 2)}px`;
+  panel.style.left = `${buttonRect.left + window.scrollX - (panelSize / 2) + (buttonRect.width / 2)}px`;
+}
+
+async function findPlayerId(playerText, playerPriceText) {
+  const players = await fetchPlayersData(); // ✅ Load JSON once, reuse it
+
+  const nameParts = playerText.trim().split(" ");
+  let firstInitial = "", playerFirstName = "", playerLastName = "";
+
+  if (nameParts.length === 2 && nameParts[0].endsWith(".")) {
+      firstInitial = nameParts[0][0]; // Extract initial
+      playerLastName = nameParts[1];
+  } else if (nameParts.length === 2) {
+      playerFirstName = nameParts[0];
+      playerLastName = nameParts[1];
+  } else {
+      console.error(`❌ Invalid player format: "${playerText}"`);
+      return null;
+  }
+
+  // ✅ Convert "$1.201M" to 1201000
+  const uiPrice = parseFloat(playerPriceText.replace(/[^0-9.]/g, "")) * 1000000;
+
+  console.log(`🔍 Searching for: ${playerFirstName || firstInitial}. ${playerLastName}, Price: ${uiPrice}`);
+  
+  // 🔎 LOG all players with matching last name BEFORE filtering further
+  const potentialMatches = Object.values(players).filter(player => 
+      player.last_name.toLowerCase() === playerLastName.toLowerCase()
+  );
+
+  console.log(`🟡 Found ${potentialMatches.length} players with last name '${playerLastName}':`, potentialMatches);
+
+  // ✅ Find exact match using `.find()`
+  const match = potentialMatches.find(player => 
+      (
+          (playerFirstName && player.first_name.toLowerCase() === playerFirstName.toLowerCase()) ||
+          (firstInitial && player.first_name.charAt(0).toLowerCase() === firstInitial.toLowerCase())
+      ) &&
+      Math.abs(player.cost - uiPrice) <= 1000
+  );
+
+  if (match) {
+      console.log(`✅ Found: ${match.first_name} ${match.last_name} (ID: ${match.id}, Price: ${match.cost})`);
+      return match.id;
+  } else {
+      console.error(`❌ No exact match found. Possible issue:`);
+      console.error(`   - Name format mismatch (e.g., missing middle name, nickname, etc.)`);
+      console.error(`   - Price mismatch (UI vs. JSON rounding issue)`);
+      return null;
+  }
 }
