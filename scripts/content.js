@@ -6,16 +6,6 @@ async function fetchPlayersData() {
 
 const players = fetchPlayersData();
 
-const playerText = "R. Marshall"; // Example UI name
-const playerPriceText = "$1.201M"; // Example UI price
-
-findPlayerId(playerText, playerPriceText).then(playerId => {
-    if (playerId) {
-        console.log(`🔍 Player ID for ${playerText} with price ${playerPriceText} is ${playerId}`);
-        // Now you can use this ID for further queries
-    }
-});
-
 //wait for page to load
 window.addEventListener("load", () => {
   setTimeout(() => {
@@ -27,16 +17,20 @@ window.addEventListener("load", () => {
 function injectInfoButtons() {
   //select all player sections
   const playerSectionsIn = document.querySelectorAll("div[class*='sc-erIqft']");
-  //const playerSectionsOut = document.querySelectorAll("div[class*='sc-dWQOTo iAaVmD playwright-mask-hidden']");
-  //const playerSections = [...playerSectionsIn, ...playerSectionsOut];
+  const playerSectionsOut = document.querySelectorAll("div[class*='sc-dWHLyg eGqZPZ']");
+  const playerSections = [...playerSectionsIn, ...playerSectionsOut];
 
-  playerSectionsIn.forEach((playerSection) => {
+  playerSections.forEach((playerSection) => {
     //Avoid adding duplicate buttons
     if (playerSection.closest('.pigpanel-wrapper')) return;
 
     //create the info button
     const infoButton = document.createElement("button");
-    infoButton.className = "pigpanel-info-btn";
+    if (playerSection.classList.contains("sc-erIqft")) {
+      infoButton.className = "pigpanel-info-btn-inTeam";
+    } else {
+      infoButton.className = "pigpanel-info-btn-outTeam";
+    }
 
     // Create image element for the icon
     const iconImg = document.createElement("img");
@@ -111,7 +105,22 @@ function showPlayerPanel(playerSection, button) {
     return;
   }
 
-  const playerName = playerSection.innerText;
+  let playerName; // ✅ Declare playerName before the if statement
+  if (button.className === "pigpanel-info-btn-outTeam") {
+      const playerData = playerSection.innerText;
+      console.log("Detected out team: " + playerData);
+  
+      const playerDataSplit = playerData.split("\n");
+      const playerNameWithInitial = playerDataSplit[0].trim();
+      const playerPrice = playerDataSplit[3].trim();
+  
+      // ✅ Await the function since it returns a Promise
+      playerName = await confirmFullName(playerNameWithInitial, playerPrice);
+      
+      console.log("✅ Confirmed Full Name: " + playerName); 
+  } else {
+      playerName = playerSection.innerText;
+  }
 
   //Create a new panel
   const panel = document.createElement("div");
@@ -238,7 +247,7 @@ function updatePanelPosition(button, panel) {
   panel.style.left = `${buttonRect.left + window.scrollX - (panelSize / 2) + (buttonRect.width / 2)}px`;
 }
 
-async function findPlayerId(playerText, playerPriceText) {
+async function confirmFullName(playerText, playerPriceText) {
   const players = await fetchPlayersData(); // ✅ Load JSON once, reuse it
 
   // ✅ Extract first initial & last name
@@ -270,8 +279,9 @@ async function findPlayerId(playerText, playerPriceText) {
   );
 
   if (match) {
-      console.log(`✅ Found: ${match.first_name} ${match.last_name} (ID: ${match.id}, Price: ${match.cost})`);
-      return match.id;
+      const fullName = `${match.first_name} ${match.last_name}`;
+      console.log(`✅ Confirmed Full Name: ${fullName} (ID: ${match.id}, Price: ${match.cost})`);
+      return match ? `${match.first_name} ${match.last_name}`.trim() : null; // ✅ Ensure it's a string;
   } else {
       console.error(`❌ No exact match found.`);
       console.error(`   - Name format mismatch`);
