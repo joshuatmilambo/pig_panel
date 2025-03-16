@@ -241,24 +241,20 @@ function updatePanelPosition(button, panel) {
 async function findPlayerId(playerText, playerPriceText) {
   const players = await fetchPlayersData(); // ✅ Load JSON once, reuse it
 
+  // ✅ Extract first initial & last name
   const nameParts = playerText.trim().split(" ");
-  let firstInitial = "", playerFirstName = "", playerLastName = "";
-
-  if (nameParts.length === 2 && nameParts[0].endsWith(".")) {
-      firstInitial = nameParts[0][0]; // Extract initial
-      playerLastName = nameParts[1];
-  } else if (nameParts.length === 2) {
-      playerFirstName = nameParts[0];
-      playerLastName = nameParts[1];
-  } else {
-      console.error(`❌ Invalid player format: "${playerText}"`);
+  if (nameParts.length !== 2 || !nameParts[0].endsWith(".")) {
+      console.error(`❌ Invalid player format: "${playerText}" (Expected "R. Marshall")`);
       return null;
   }
+
+  const firstInitial = nameParts[0][0]; // "R" from "R."
+  const playerLastName = nameParts[1]; // "Marshall"
 
   // ✅ Convert "$1.201M" to 1201000
   const uiPrice = parseFloat(playerPriceText.replace(/[^0-9.]/g, "")) * 1000000;
 
-  console.log(`🔍 Searching for: ${playerFirstName || firstInitial}. ${playerLastName}, Price: ${uiPrice}`);
+  console.log(`🔍 Searching for: ${firstInitial}. ${playerLastName}, Price: ${uiPrice}`);
   
   // 🔎 LOG all players with matching last name BEFORE filtering further
   const potentialMatches = Object.values(players).filter(player => 
@@ -269,10 +265,7 @@ async function findPlayerId(playerText, playerPriceText) {
 
   // ✅ Find exact match using `.find()`
   const match = potentialMatches.find(player => 
-      (
-          (playerFirstName && player.first_name.toLowerCase() === playerFirstName.toLowerCase()) ||
-          (firstInitial && player.first_name.charAt(0).toLowerCase() === firstInitial.toLowerCase())
-      ) &&
+      player.first_name.charAt(0).toLowerCase() === firstInitial.toLowerCase() &&
       Math.abs(player.cost - uiPrice) <= 1000
   );
 
@@ -280,9 +273,9 @@ async function findPlayerId(playerText, playerPriceText) {
       console.log(`✅ Found: ${match.first_name} ${match.last_name} (ID: ${match.id}, Price: ${match.cost})`);
       return match.id;
   } else {
-      console.error(`❌ No exact match found. Possible issue:`);
-      console.error(`   - Name format mismatch (e.g., missing middle name, nickname, etc.)`);
-      console.error(`   - Price mismatch (UI vs. JSON rounding issue)`);
+      console.error(`❌ No exact match found.`);
+      console.error(`   - Name format mismatch`);
+      console.error(`   - Price rounding issue (try increasing threshold)`);
       return null;
   }
 }
