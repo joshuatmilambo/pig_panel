@@ -14,6 +14,14 @@
   transform: "translateY(-50%)";
 }
 
+.pigpanel-info-btn-outTeam {
+  cursor: pointer;
+  background: none;
+  color: white;
+  border: none;
+  position: absolute;
+}
+
 .pigpanel-info-btn-icon {
   width: 20px;
   height: 20px;

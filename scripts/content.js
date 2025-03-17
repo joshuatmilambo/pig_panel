@@ -1,10 +1,18 @@
+let playersData = null; // ✅ Global variable to store loaded player data
+
 async function fetchPlayersData() {
+  if (playersData) return playersData; // ✅ If already loaded, return it
+
   const response = await fetch("https://fantasy.afl.com.au/data/afl/players.json");
-  const players = await response.json();
-  return players;
+  playersData = await response.json();
+  console.log("✅ Player data loaded:", playersData);
+  return playersData;
 }
 
-const players = fetchPlayersData();
+// Load the players data **ONCE** when the page loads
+window.addEventListener("load", async () => {
+  await fetchPlayersData(); // ✅ Ensure data is available early
+});
 
 //wait for page to load
 window.addEventListener("load", () => {
@@ -114,10 +122,11 @@ function showPlayerPanel(playerSection, button) {
       const playerNameWithInitial = playerDataSplit[0].trim();
       const playerPrice = playerDataSplit[3].trim();
   
-      // ✅ Await the function since it returns a Promise
-      playerName = await confirmFullName(playerNameWithInitial, playerPrice);
+      console.log("Detected out team: " + playerNameWithInitial);
+
+      playerName = confirmFullName(playerNameWithInitial, playerPrice);
       
-      console.log("✅ Confirmed Full Name: " + playerName); 
+      console.log("✅ Confirmed Full Name: " + String(playerName)); 
   } else {
       playerName = playerSection.innerText;
   }
@@ -247,45 +256,45 @@ function updatePanelPosition(button, panel) {
   panel.style.left = `${buttonRect.left + window.scrollX - (panelSize / 2) + (buttonRect.width / 2)}px`;
 }
 
-async function confirmFullName(playerText, playerPriceText) {
-  const players = await fetchPlayersData(); // ✅ Load JSON once, reuse it
+function confirmFullName(playerText, playerPriceText) {
+  if (!playersData) {
+    console.error("❌ Player data not loaded yet.");
+    return null;
+  }
 
   // ✅ Extract first initial & last name
   const nameParts = playerText.trim().split(" ");
   if (nameParts.length !== 2 || !nameParts[0].endsWith(".")) {
-      console.error(`❌ Invalid player format: "${playerText}" (Expected "R. Marshall")`);
-      return null;
+    console.error(`❌ Invalid player format: "${playerText}"`);
+    return null;
   }
 
-  const firstInitial = nameParts[0][0]; // "R" from "R."
+  const firstInitial = nameParts[0][0]; // "R"
   const playerLastName = nameParts[1]; // "Marshall"
 
-  // ✅ Convert "$1.201M" to 1201000
   const uiPrice = parseFloat(playerPriceText.replace(/[^0-9.]/g, "")) * 1000000;
 
   console.log(`🔍 Searching for: ${firstInitial}. ${playerLastName}, Price: ${uiPrice}`);
   
   // 🔎 LOG all players with matching last name BEFORE filtering further
-  const potentialMatches = Object.values(players).filter(player => 
-      player.last_name.toLowerCase() === playerLastName.toLowerCase()
+  const potentialMatches = Object.values(playersData).filter(player => 
+    player.last_name.toLowerCase() === playerLastName.toLowerCase()
   );
 
   console.log(`🟡 Found ${potentialMatches.length} players with last name '${playerLastName}':`, potentialMatches);
 
   // ✅ Find exact match using `.find()`
   const match = potentialMatches.find(player => 
-      player.first_name.charAt(0).toLowerCase() === firstInitial.toLowerCase() &&
-      Math.abs(player.cost - uiPrice) <= 1000
+    player.first_name.charAt(0).toLowerCase() === firstInitial.toLowerCase() &&
+    Math.abs(player.cost - uiPrice) <= 1000
   );
 
   if (match) {
-      const fullName = `${match.first_name} ${match.last_name}`;
-      console.log(`✅ Confirmed Full Name: ${fullName} (ID: ${match.id}, Price: ${match.cost})`);
-      return match ? `${match.first_name} ${match.last_name}`.trim() : null; // ✅ Ensure it's a string;
+    const fullName = `${match.first_name} ${match.last_name}`;
+    console.log(`✅ Confirmed Full Name: ${fullName} (ID: ${match.id}, Price: ${match.cost})`);
+    return fullName; // ✅ Ensure it's a string
   } else {
-      console.error(`❌ No exact match found.`);
-      console.error(`   - Name format mismatch`);
-      console.error(`   - Price rounding issue (try increasing threshold)`);
-      return null;
+    console.error(`❌ No exact match found.`);
+    return "Unknown Player"; // ✅ Return a fallback string
   }
 }
