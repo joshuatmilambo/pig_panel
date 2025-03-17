@@ -5,7 +5,7 @@ async function fetchPlayersData() {
 
   const response = await fetch("https://fantasy.afl.com.au/data/afl/players.json");
   playersData = await response.json();
-  console.log("✅ Player data loaded:", playersData);
+  console.log("✅ Player data loaded!");
   return playersData;
 }
 
@@ -29,8 +29,12 @@ function injectInfoButtons() {
   const playerSections = [...playerSectionsIn, ...playerSectionsOut];
 
   playerSections.forEach((playerSection) => {
-    //Avoid adding duplicate buttons
-    if (playerSection.closest('.pigpanel-wrapper')) return;
+    // Avoid duplicate buttons
+    const existingInTeamButton = playerSection.querySelector(".pigpanel-info-btn-inTeam");
+    const existingOutTeamButton = playerSection.parentNode.querySelector(".pigpanel-info-btn-outTeam");
+
+    if (existingInTeamButton) existingInTeamButton.remove();
+    if (existingOutTeamButton) existingOutTeamButton.remove();
 
     //create the info button
     const infoButton = document.createElement("button");
@@ -54,23 +58,36 @@ function injectInfoButtons() {
       event.stopPropagation();
 
       const existingPanel = document.getElementById("pigpanel-panel");
-    
-      // Check if panel already exists and is for the same player
-      if (existingPanel && existingPanel.dataset.player === playerSection.innerText) {
-        existingPanel.remove();  // ✅ Close if same player is clicked again
-        window.removeEventListener("scroll", updatePanelPosition);
-      } else {
-          showPlayerPanel(playerSection, infoButton);  // ✅ Otherwise, show new panel
+
+      // If panel exists, remove it (regardless of player)
+      if (existingPanel) {
+        cleanupPanel(existingPanel);
+        return; // ✅ Exit function early if panel existed
       }
+
+      // Otherwise, open the new panel
+      showPlayerPanel(playerSection, infoButton);
     });
 
-    const wrapper = document.createElement('div');
-    wrapper.className = "pigpanel-wrapper";
-
-    // Insert wrapper and move elements inside
-    playerSection.parentNode.insertBefore(wrapper, playerSection);
-    wrapper.appendChild(playerSection);
-    wrapper.appendChild(infoButton);
+    // ✅ Correct Placement
+    if (playerSection.classList.contains("sc-erIqft")) {
+      // Players in the team
+      if (!playerSection.closest('.pigpanel-wrapper')) {
+        const wrapper = document.createElement("div");
+        wrapper.className = "pigpanel-wrapper";
+        playerSection.parentNode.insertBefore(wrapper, playerSection);
+        wrapper.appendChild(playerSection);
+        wrapper.appendChild(infoButton);
+      }
+    } else {
+      // Players outside the team
+      const detailsContainer = playerSection.parentNode.querySelector(".sc-kHonzX.faEnRu");
+      if (detailsContainer) {
+        detailsContainer.appendChild(infoButton);
+      } else {
+        console.warn("⚠️ Details container not found for:", playerSection.innerText);
+      }
+    }
   });
 }
 
@@ -140,25 +157,31 @@ function showPlayerPanel(playerSection, button) {
 
   window.addEventListener("scroll", updatePanelPosition);
 
-// ✅ Detect if the player card's **parent** is changing (fix for flip issue)
-const parentElement = playerSection.parentNode;
-let parentObserver = new MutationObserver((mutations) => {
-    for (const mutation of mutations) {
-        if (mutation.type === "attributes" || mutation.type === "childList") {
-            console.log("⚠️ Player card flipped or modified! Closing panel.");
-            cleanupPanel(panel, parentObserver)
-            return; // Exit to avoid unnecessary checks
-        }
-    }
-});
-
-if (parentElement) {
-    parentObserver.observe(parentElement, { attributes: true, childList: true, subtree: true });
-}
+  const parentElement = playerSection.parentNode;
+  let parentObserver = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+          // Ignore text changes
+          if (mutation.type === "characterData") continue;
+          
+          // Check if the element is actually being removed
+          if (mutation.removedNodes.length > 0 && [...mutation.removedNodes].includes(playerSection)) {
+              console.log("⚠️ Player card removed! Closing panel.");
+              cleanupPanel(panel, parentObserver);
+              return;
+          }
+  
+          // Ignore non-relevant mutations
+          if (mutation.type === "attributes" && mutation.attributeName !== "class") continue;
+  
+          console.log("⚠️ Significant player card change detected! Closing panel.");
+          cleanupPanel(panel, parentObserver);
+          return; // Exit to avoid unnecessary checks
+      }
+  });
 
   const buttonData = [
     { 
-      imgSrc: "images/dfs.png", gridArea: "1 / 2", // Bottom-right
+      imgSrc: "images/dfs.png", gridArea: "1 / 3", // Bottom-right
       action: () => {
       console.log(`DFS Button Clicked! Searching for ${playerName}`);
       chrome.storage.local.set({ selectedPlayerName: playerName }, () => {
@@ -168,7 +191,7 @@ if (parentElement) {
       }
     },
     {
-      imgSrc: "images/footywire.png", gridArea: "3 / 2", 
+      imgSrc: "images/footywire.png", gridArea: "3 / 3", 
       action: () => {
         console.log(`FW Button Clicked! Searching for ${playerName}`);
     
@@ -229,14 +252,12 @@ if (parentElement) {
 
   document.body.appendChild(panel);
 
-  // ✅ Close the panel when clicking outside of it
-  setTimeout(() => {
-      document.addEventListener("click", (event) => {
-          if (!panel.contains(event.target) && event.target !== button) {
-            cleanupPanel(panel, parentObserver)
-          }
-      }, { once: true });
-  }, 50);
+  document.addEventListener("click", (event) => {
+    const panel = document.getElementById("pigpanel-panel");
+    if (panel && !panel.contains(event.target) && event.target !== button) {
+      cleanupPanel(panel);
+    }
+  });
 
 }
 
@@ -251,7 +272,7 @@ function updatePanelPosition(button, panel) {
   if (!panel || !button) return; // ✅ Exit if panel or button doesn't exist
 
   const buttonRect = button.getBoundingClientRect();
-  const panelSize = 120;
+  const panelSize = 100;
   panel.style.top = `${buttonRect.top + window.scrollY - (panelSize / 2) + (buttonRect.height / 2)}px`;
   panel.style.left = `${buttonRect.left + window.scrollX - (panelSize / 2) + (buttonRect.width / 2)}px`;
 }

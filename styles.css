@@ -15,11 +15,16 @@
 }
 
 .pigpanel-info-btn-outTeam {
-  cursor: pointer;
-  background: none;
-  color: white;
+  overflow: visible;
+  text-transform: none;
   border: none;
-  position: absolute;
+  border-radius: 50%;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+
 }
 
 .pigpanel-info-btn-icon {
@@ -38,8 +43,8 @@
 
 .pigpanel-panel {
   position: absolute;
-  width: 120px; /* Adjust size as needed */
-  height: 120px;
+  width: 100px; /* Adjust size as needed */
+  height: 100px;
   background: rgba(255, 255, 255, 0); /* Fully transparent */
   border: none;
   border-radius: 10px;
