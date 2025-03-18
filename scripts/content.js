@@ -25,7 +25,7 @@ window.addEventListener("load", () => {
 function injectInfoButtons() {
   // Select all player sections
   const playerSectionsInL = document.querySelectorAll("div[class*='sc-erIqft']");
-  const playerSectionsInS = document.querySelectorAll("div.sc-dCxpUB.cTNVph");
+  const playerSectionsInS = document.querySelectorAll("div[class*='sc-deEcOf cNQypA']");
   const playerSectionsOut = document.querySelectorAll("div[class*='sc-dWHLyg eGqZPZ']");
   const playerSections = [...playerSectionsInL, ...playerSectionsInS, ...playerSectionsOut];
 
@@ -39,10 +39,14 @@ function injectInfoButtons() {
 
     // Create the info button
     const infoButton = document.createElement("button");
-    if (playerSection.classList.contains("sc-erIqft") || playerSection.classList.contains("sc-dCxpUB cTNVph")) {
-      infoButton.className = "pigpanel-info-btn-inTeam";
-    } else {
-      infoButton.className = "pigpanel-info-btn-outTeam";
+    if (playerSection.classList.contains("sc-erIqft")) {
+      infoButton.className = "pigpanel-info-btn-inTeam"; // ✅ Large In Team
+    } 
+    else if (playerSection.closest(".sc-deEcOf")) { 
+      infoButton.className = "pigpanel-info-btn-inTeam"; // ✅ Small In Team (More Reliable)
+    } 
+    else {
+      infoButton.className = "pigpanel-info-btn-outTeam"; // ✅ Out Team
     }
 
     // Create image element for the icon
@@ -80,14 +84,9 @@ function injectInfoButtons() {
         wrapper.appendChild(playerSection);
         wrapper.appendChild(infoButton);
       }
-    } else if (playerSection.classList.contains("sc-dCxpUB") && playerSection.classList.contains("cTNVph")) {
-      const detailsContainer = playerSection.parentNode.querySelector(".sc-deEcOf.cNQypA");
-
-      if (!detailsContainer) {
-        console.warn("⚠️ detailsContainer not found for:", playerSection);
-      } else {
-        detailsContainer.appendChild(infoButton);
-      }
+    } else if (playerSection.classList.contains("sc-deEcOf") && playerSection.classList.contains("cNQypA")) {
+      // ✅ Append button directly to the `playerSection` itself
+      playerSection.insertAdjacentElement("beforeend", infoButton);
     } else {
       // Players outside the team
       const detailsContainer = playerSection.parentNode.querySelector(".sc-kHonzX.faEnRu");

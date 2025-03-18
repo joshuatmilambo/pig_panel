@@ -39,6 +39,41 @@
   position: relative;
   width: 100%;
 }
+
+@media (max-width: 1080px) { /* Adjust width threshold if needed */
+  .sc-deEcOf.cNQypA {
+    position: relative !important;
+  }
+
+  .sc-deEcOf.cNQypA .pigpanel-info-btn-inTeam {
+    position: relative !important;
+    left: -6px !important;
+    top: auto !important;
+    margin-top: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 16px !important;
+    height: 16px !important;
+  }
+
+  .sc-deEcOf.cNQypA button {
+    flex-shrink: 0 !important; /* Prevent buttons from shrinking */
+    width: 16px !important;
+    height: 16px !important;
+    max-width: none !important;
+    max-height: none !important;
+  }
+
+  /* Resize ALL icons inside buttons */
+  .sc-deEcOf.cNQypA button img {
+    width: 16px !important;
+    height: 16px !important;
+    max-width: none !important;
+    max-height: none !important;
+  }
+}
+
 @media (max-width: 1080px) { /* Adjust width threshold if needed */
   .sc-kHonzX.faEnRu {
     position: relative;
