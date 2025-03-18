@@ -141,20 +141,30 @@ function showPlayerPanel(playerSection, button) {
 
   let playerName; // ✅ Declare playerName before the if statement
   if (button.className === "pigpanel-info-btn-outTeam") {
-      const playerData = playerSection.innerText;
-      console.log("Detected out team: " + playerData);
-  
-      const playerDataSplit = playerData.split("\n");
-      const playerNameWithInitial = playerDataSplit[0].trim();
-      const playerPrice = playerDataSplit[3].trim();
-  
-      console.log("Detected out team: " + playerNameWithInitial);
+    const playerData = playerSection.innerText;
+    console.log("Detected out team: " + playerData);
 
-      playerName = confirmFullName(playerNameWithInitial, playerPrice);
-      
-      console.log("✅ Confirmed Full Name: " + String(playerName)); 
+    const playerDataSplit = playerData.split("\n");
+    const playerNameWithInitial = playerDataSplit[0].trim();
+    const playerPrice = playerDataSplit[3].trim();
+
+    console.log("Detected out team: " + playerNameWithInitial);
+
+    playerName = confirmFullName(playerNameWithInitial, playerPrice);
+    
+    console.log("✅ Confirmed Full Name: " + String(playerName)); 
   } else {
-      playerName = playerSection.innerText;
+    if (playerSection.classList.contains("sc-erIqft")) {
+      playerName = playerSection.innerText; // ✅ Large In Team
+    } else {
+      const fullSpan = playerSection.parentNode.querySelector(".full");
+      if (fullSpan) {
+        playerName = fullSpan.textContent.trim();
+        console.log("Extracted text:", playerName);
+      } else {
+        console.warn("⚠️ No `.full` span found inside:", playerSection);
+      }
+    }
   }
 
   //Create a new panel
