@@ -23,10 +23,11 @@ window.addEventListener("load", () => {
 });
 
 function injectInfoButtons() {
-  //select all player sections
-  const playerSectionsIn = document.querySelectorAll("div[class*='sc-erIqft']");
+  // Select all player sections
+  const playerSectionsInL = document.querySelectorAll("div[class*='sc-erIqft']");
+  const playerSectionsInS = document.querySelectorAll("div.sc-dCxpUB.cTNVph");
   const playerSectionsOut = document.querySelectorAll("div[class*='sc-dWHLyg eGqZPZ']");
-  const playerSections = [...playerSectionsIn, ...playerSectionsOut];
+  const playerSections = [...playerSectionsInL, ...playerSectionsInS, ...playerSectionsOut];
 
   playerSections.forEach((playerSection) => {
     // Avoid duplicate buttons
@@ -36,9 +37,9 @@ function injectInfoButtons() {
     if (existingInTeamButton) existingInTeamButton.remove();
     if (existingOutTeamButton) existingOutTeamButton.remove();
 
-    //create the info button
+    // Create the info button
     const infoButton = document.createElement("button");
-    if (playerSection.classList.contains("sc-erIqft")) {
+    if (playerSection.classList.contains("sc-erIqft") || playerSection.classList.contains("sc-dCxpUB cTNVph")) {
       infoButton.className = "pigpanel-info-btn-inTeam";
     } else {
       infoButton.className = "pigpanel-info-btn-outTeam";
@@ -53,7 +54,7 @@ function injectInfoButtons() {
     // Append image to button
     infoButton.appendChild(iconImg);
 
-    //Add click event listener
+    // Add click event listener
     infoButton.addEventListener("click", (event) => {
       event.stopPropagation();
 
@@ -79,13 +80,22 @@ function injectInfoButtons() {
         wrapper.appendChild(playerSection);
         wrapper.appendChild(infoButton);
       }
+    } else if (playerSection.classList.contains("sc-dCxpUB") && playerSection.classList.contains("cTNVph")) {
+      const detailsContainer = playerSection.parentNode.querySelector(".sc-deEcOf.cNQypA");
+
+      if (!detailsContainer) {
+        console.warn("⚠️ detailsContainer not found for:", playerSection);
+      } else {
+        detailsContainer.appendChild(infoButton);
+      }
     } else {
       // Players outside the team
       const detailsContainer = playerSection.parentNode.querySelector(".sc-kHonzX.faEnRu");
-      if (detailsContainer) {
-        detailsContainer.appendChild(infoButton);
+
+      if (!detailsContainer) {
+        console.warn("⚠️ detailsContainer not found for:", playerSection);
       } else {
-        console.warn("⚠️ Details container not found for:", playerSection.innerText);
+        detailsContainer.appendChild(infoButton);
       }
     }
   });
