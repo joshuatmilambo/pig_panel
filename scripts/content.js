@@ -1,7 +1,7 @@
-let playersData = null; // ✅ Global variable to store loaded player data
+let playersData = null; // Global variable to store loaded player data
 
 async function fetchPlayersData() {
-  if (playersData) return playersData; // ✅ If already loaded, return it
+  if (playersData) return playersData; // If already loaded, return it
 
   const response = await fetch("https://fantasy.afl.com.au/data/afl/players.json");
   playersData = await response.json();
@@ -11,10 +11,10 @@ async function fetchPlayersData() {
 
 // Load the players data **ONCE** when the page loads
 window.addEventListener("load", async () => {
-  await fetchPlayersData(); // ✅ Ensure data is available early
+  await fetchPlayersData();
 });
 
-//wait for page to load
+// Wait for page to load
 window.addEventListener("load", () => {
   setTimeout(() => {
     injectInfoButtons();
@@ -39,6 +39,7 @@ function injectInfoButtons() {
 
     // Create the info button
     const infoButton = document.createElement("button");
+    // Set classnames for CSS
     if (playerSection.classList.contains("sc-erIqft")) {
       infoButton.className = "pigpanel-info-btn-inTeam"; // ✅ Large In Team
     } 
@@ -64,19 +65,17 @@ function injectInfoButtons() {
 
       const existingPanel = document.getElementById("pigpanel-panel");
 
-      // If panel exists, remove it (regardless of player)
+      // If panel exists, remove it
       if (existingPanel) {
         cleanupPanel(existingPanel);
-        return; // ✅ Exit function early if panel existed
+        return; //Exit function early if panel existed
       }
-
       // Otherwise, open the new panel
       showPlayerPanel(playerSection, infoButton);
     });
 
-    // ✅ Correct Placement
+    // Place buttons in the correct position
     if (playerSection.classList.contains("sc-erIqft")) {
-      // Players in the team
       if (!playerSection.closest('.pigpanel-wrapper')) {
         const wrapper = document.createElement("div");
         wrapper.className = "pigpanel-wrapper";
@@ -85,12 +84,9 @@ function injectInfoButtons() {
         wrapper.appendChild(infoButton);
       }
     } else if (playerSection.classList.contains("sc-deEcOf") && playerSection.classList.contains("cNQypA")) {
-      // ✅ Append button directly to the `playerSection` itself
       playerSection.insertAdjacentElement("beforeend", infoButton);
     } else {
-      // Players outside the team
       const detailsContainer = playerSection.parentNode.querySelector(".sc-kHonzX.faEnRu");
-
       if (!detailsContainer) {
         console.warn("⚠️ detailsContainer not found for:", playerSection);
       } else {
@@ -112,11 +108,11 @@ function observeDynamicChanges() {
     }
 
     if (shouldInject) {
-      // ✅ Disconnect observer before injecting buttons
+      // Disconnect observer before injecting buttons
       observer.disconnect();
       injectInfoButtons();
 
-      // ✅ Reconnect observer only if elements are still being added
+      // Reconnect observer only if elements are still being added
       setTimeout(() => {
         if (document.body) {
           observeDynamicChanges();
@@ -132,30 +128,26 @@ function observeDynamicChanges() {
 }
 
 function showPlayerPanel(playerSection, button) {
-  //Remove existing panel
+  // Remove existing panel
   const existingPanel = document.getElementById("pigpanel-panel");
   if (existingPanel && existingPanel.dataset.player === playerSection.innerText) {
     cleanupPanel(existingPanel, observer)
     return;
   }
 
-  let playerName; // ✅ Declare playerName before the if statement
+  let playerName; // Declare playerName before the if statement
   if (button.className === "pigpanel-info-btn-outTeam") {
     const playerData = playerSection.innerText;
-    console.log("Detected out team: " + playerData);
-
     const playerDataSplit = playerData.split("\n");
     const playerNameWithInitial = playerDataSplit[0].trim();
     const playerPrice = playerDataSplit[3].trim();
 
-    console.log("Detected out team: " + playerNameWithInitial);
-
     playerName = confirmFullName(playerNameWithInitial, playerPrice);
-    
-    console.log("✅ Confirmed Full Name: " + String(playerName)); 
+    console.log("Extracted text:", playerName); 
   } else {
     if (playerSection.classList.contains("sc-erIqft")) {
       playerName = playerSection.innerText; // ✅ Large In Team
+      console.log("Extracted text:", playerName);
     } else {
       const fullSpan = playerSection.parentNode.querySelector(".full");
       if (fullSpan) {
@@ -167,7 +159,7 @@ function showPlayerPanel(playerSection, button) {
     }
   }
 
-  //Create a new panel
+  // Create a new panel
   const panel = document.createElement("div");
   panel.id = "pigpanel-panel";
   panel.dataset.player = playerName;
@@ -240,7 +232,7 @@ function showPlayerPanel(playerSection, button) {
     btn.className = "pigpanel-panel-grid-btn";
     btn.style.gridArea = btnData.gridArea;
 
-    // ✅ If an image is provided, use an <img> instead of text
+    // Use image as provided
     if (btnData.imgSrc) {
         const img = document.createElement("img");
         img.src = chrome.runtime.getURL(btnData.imgSrc);  // Load image from extension
@@ -331,10 +323,10 @@ function confirmFullName(playerText, playerPriceText) {
 
   if (match) {
     const fullName = `${match.first_name} ${match.last_name}`;
-    console.log(`✅ Confirmed Full Name: ${fullName} (ID: ${match.id}, Price: ${match.cost})`);
+    console.log(`Search Complete: ${fullName} (ID: ${match.id}, Price: ${match.cost})`);
     return fullName; // ✅ Ensure it's a string
   } else {
     console.error(`❌ No exact match found.`);
-    return "Unknown Player"; // ✅ Return a fallback string
+    return "Unknown Player"; // Return a fallback string
   }
 }
