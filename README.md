@@ -5,4 +5,3 @@ Pig Panel is a Google Chrome extension designed to streamline AFL Fantasy resear
 ✅ Lightweight & Fast – Designed to be non-intrusive and run efficiently in the background.
 ✅ Minimal Permissions – Only accesses public websites (AFL Fantasy, DFS Australia, and FootyWire) for data. 
 ✅ No Tracking – The extension does not store user data or send information externally.
-✅ Optimised for Speed – Works seamlessly without slowing down AFL Fantasy.
