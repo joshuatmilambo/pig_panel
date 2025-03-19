@@ -3,9 +3,10 @@ let playersData = null; // Global variable to store loaded player data
 async function fetchPlayersData() {
   if (playersData) return playersData; // If already loaded, return it
 
+  // Need to sanitise
   const response = await fetch("https://fantasy.afl.com.au/data/afl/players.json");
   playersData = await response.json();
-  console.log("✅ Player data loaded!");
+  console.log("Player data loaded!");
   return playersData;
 }
 
@@ -41,13 +42,13 @@ function injectInfoButtons() {
     const infoButton = document.createElement("button");
     // Set classnames for CSS
     if (playerSection.classList.contains("sc-erIqft")) {
-      infoButton.className = "pigpanel-info-btn-inTeam"; // ✅ Large In Team
+      infoButton.className = "pigpanel-info-btn-inTeam"; // Large In Team
     } 
     else if (playerSection.closest(".sc-deEcOf")) { 
-      infoButton.className = "pigpanel-info-btn-inTeam"; // ✅ Small In Team (More Reliable)
+      infoButton.className = "pigpanel-info-btn-inTeam"; // Small In Team
     } 
     else {
-      infoButton.className = "pigpanel-info-btn-outTeam"; // ✅ Out Team
+      infoButton.className = "pigpanel-info-btn-outTeam"; // Out Team
     }
 
     // Create image element for the icon

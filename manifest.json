@@ -20,6 +20,9 @@
       "run_at": "document_idle"
     }
   ],
+  "content_security_policy" : {
+    "extension_pages": "script-src 'self'; object-src 'none';"
+  },
   "icons" : {
     "16": "images/pig_16.png",
     "48": "images/pig_48.png",
@@ -27,7 +30,7 @@
   },
   "web_accessible_resources" : [{
     "resources": [ "images/*.png" ],
-    "matches": [ "<all_urls>" ]
+    "matches": ["https://fantasy.afl.com.au/*"]
   }],
   "permissions" : [
     "storage"
