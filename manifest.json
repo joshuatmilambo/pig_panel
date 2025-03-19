@@ -3,7 +3,6 @@
   "description" : "Base Level Extension",
   "version" : "1.0",
   "manifest_version" : 3,
-  "host_permissions" : ["https://fantasy.afl.com.au/*"],
   "content_scripts" : [
     {
       "matches" : ["https://fantasy.afl.com.au/*"],

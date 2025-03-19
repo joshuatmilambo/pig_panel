@@ -22,6 +22,19 @@ function startPlayerSelection() {
       return;
     }
 
+    // Function to sanitize and format the player name
+    function sanitizePlayerName(name) {
+      // Trim whitespace
+      let sanitized = name.trim();
+      // Allow only letters, spaces, hyphens, apostrophes, periods, and accents
+      sanitized = sanitized.replace(/[^a-zA-Z\s\-'’.éÉüÜñÑôÔ]/g, '');
+      // Normalize capitalization (Title Case)
+      sanitized = sanitized.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
+      return sanitized;
+    }
+    // Sanitize and format the player name
+    selectedPlayerName = sanitizePlayerName(selectedPlayerName);
+
     console.log("🗑️ Clearing stored player name...");
     chrome.storage.local.remove("selectedPlayerName", () => {
       if (chrome.runtime.lastError) {
@@ -31,7 +44,7 @@ function startPlayerSelection() {
       }
     });
 
-    console.log("✅ Retrieved player from storage:", selectedPlayerName);
+    console.log("✅ Retrieved sanitised player from storage:", selectedPlayerName);
 
     let observer; // Store observer reference so we can disconnect it
 
