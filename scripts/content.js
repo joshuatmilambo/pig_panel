@@ -25,9 +25,9 @@ window.addEventListener("load", () => {
 
 function injectInfoButtons() {
   // Select all player sections
-  const playerSectionsInL = document.querySelectorAll("div[class*='sc-erIqft']");
-  const playerSectionsInS = document.querySelectorAll("div[class*='sc-deEcOf cNQypA']");
-  const playerSectionsOut = document.querySelectorAll("div[class*='sc-dWHLyg eGqZPZ']");
+  const playerSectionsInL = document.querySelectorAll("div[class*='Flipcard-front']");
+  const playerSectionsInS = document.querySelectorAll("div[class*='list-view-player-info']");
+  const playerSectionsOut = document.querySelectorAll("div[class*='player-info']");
   const playerSections = [...playerSectionsInL, ...playerSectionsInS, ...playerSectionsOut];
 
   playerSections.forEach((playerSection) => {
@@ -41,10 +41,10 @@ function injectInfoButtons() {
     // Create the info button
     const infoButton = document.createElement("button");
     // Set classnames for CSS
-    if (playerSection.classList.contains("sc-erIqft")) {
+    if (playerSection.classList.contains("Flipcard-front")) {
       infoButton.className = "pigpanel-info-btn-inTeam"; // Large In Team
     } 
-    else if (playerSection.closest(".sc-deEcOf")) { 
+    else if (playerSection.classList.contains("list-view-player-info")) { 
       infoButton.className = "pigpanel-info-btn-inTeam"; // Small In Team
     } 
     else {
@@ -76,22 +76,25 @@ function injectInfoButtons() {
     });
 
     // Place buttons in the correct position
-    if (playerSection.classList.contains("sc-erIqft")) {
-      if (!playerSection.closest('.pigpanel-wrapper')) {
-        const wrapper = document.createElement("div");
-        wrapper.className = "pigpanel-wrapper";
-        playerSection.parentNode.insertBefore(wrapper, playerSection);
-        wrapper.appendChild(playerSection);
-        wrapper.appendChild(infoButton);
-      }
-    } else if (playerSection.classList.contains("sc-deEcOf") && playerSection.classList.contains("cNQypA")) {
-      playerSection.insertAdjacentElement("beforeend", infoButton);
-    } else {
-      const detailsContainer = playerSection.parentNode.querySelector(".sc-kHonzX.faEnRu");
-      if (!detailsContainer) {
-        console.warn("⚠️ detailsContainer not found for:", playerSection);
+    if (playerSection.classList.contains("Flipcard-front")) {
+      if (!playerSection) {
+        console.warn("In_L element not found for:", playerSection);
       } else {
-        detailsContainer.appendChild(infoButton);
+        playerSection.appendChild(infoButton);
+      }
+    } else if (playerSection.classList.contains("list-view-player-info")) {
+      const buttonsElement = playerSection.children[1];
+      if (!buttonsElement) {
+        console.warn("In_S element not found for:", playerSection);
+      } else {
+        buttonsElement.appendChild(infoButton);
+      }
+    } else {
+      const buttonsElement = playerSection.children[1];
+      if (!buttonsElement) {
+        console.warn("Out element not found for:", playerSection);
+      } else {
+        buttonsElement.appendChild(infoButton);
       }
     }
   });
@@ -111,21 +114,17 @@ function observeDynamicChanges() {
     if (shouldInject) {
       // Disconnect observer before injecting buttons
       observer.disconnect();
+      
+      // Ensure buttons are not removed before reinjection
       injectInfoButtons();
 
-      // Reconnect observer only if elements are still being added
-      setTimeout(() => {
-        if (document.body) {
-          observeDynamicChanges();
-        }
-      }, 1000);
+      // Reconnect observer immediately after injection
+      observeDynamicChanges();
     }
   });
 
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true,
-  });
+  // Start observing body for changes
+  observer.observe(document.body, { childList: true, subtree: true });
 }
 
 function showPlayerPanel(playerSection, button) {
@@ -138,13 +137,17 @@ function showPlayerPanel(playerSection, button) {
 
   let playerName; // Declare playerName before the if statement
   if (button.className === "pigpanel-info-btn-outTeam") {
-    const playerData = playerSection.innerText;
-    const playerDataSplit = playerData.split("\n");
-    const playerNameWithInitial = playerDataSplit[0].trim();
-    const playerPrice = playerDataSplit[3].trim();
-
-    playerName = confirmFullName(playerNameWithInitial, playerPrice);
-    console.log("Extracted text:", playerName); 
+    if (playerSection.innerText) {
+      const playerData = playerSection.innerText;
+      const playerDataSplit = playerData.split("\n");
+      const playerNameWithInitial = playerDataSplit[0].trim();
+      const playerPrice = playerDataSplit[3].trim();
+  
+      playerName = confirmFullName(playerNameWithInitial, playerPrice);
+      console.log("Extracted text:", playerName); 
+    } else {
+      console.warn("⚠️ No playerName inside:", playerSection);
+    }
   } else {
     if (playerSection.classList.contains("sc-erIqft")) {
       playerName = playerSection.innerText; // ✅ Large In Team

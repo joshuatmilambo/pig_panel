@@ -1,18 +1,30 @@
-.pigpanel-info-btn-inTeam {
-  cursor: pointer;
-  background: none;
-  color: white;
-  border: none;
-  position: absolute;
-  right: 7px;
-  top: -100%;
-  border-radius: 3px;
-  padding: 2px 5px;
-  margin-left: 6px;
-  z-index: 1000;
-  transform: "translateY(-50%)";
+/* Ensure parent has relative positioning */
+.player-card {
+  position: relative;
 }
 
+/* Button when in team (25x25) */
+.pigpanel-info-btn-inTeam {
+  position: absolute;
+  top: 30%; /* Moves button dynamically based on card height */
+  right: 8%; /* Adjusts position relative to card width */
+  color: white;
+  border: none;
+  background: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 25;
+}
+
+.pigpanel-info-btn-inTeam .pigpanel-info-btn-icon {
+  width: 22px;
+  height: 22px;
+}
+
+/* Button when out of team (20x20) */
 .pigpanel-info-btn-outTeam {
   overflow: visible;
   text-transform: none;
@@ -25,27 +37,24 @@
   cursor: pointer;
 }
 
-.pigpanel-info-btn-icon {
+.pigpanel-info-btn-outTeam .pigpanel-info-btn-icon {
   width: 20px;
   height: 20px;
-  display: block;
-  flex-shrink: 0; /* Prevent button from shrinking */
 }
 
-.pigpanel-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center; /* Keeps the name centered */
-  position: relative;
-  width: 100%;
+/* Button when out of team but inside .player-details-status (16x16) */
+.player-details-status .pigpanel-info-btn-outTeam .pigpanel-info-btn-icon {
+  width: 16px;
+  height: 16px;
 }
 
+/* In team small page */
 @media (max-width: 1080px) { /* Adjust width threshold if needed */
-  .sc-deEcOf.cNQypA {
+  .list-view-player-info {
     position: relative !important;
   }
 
-  .sc-deEcOf.cNQypA .pigpanel-info-btn-inTeam {
+  .list-view-player-info .pigpanel-info-btn-inTeam {
     position: relative !important;
     left: -6px !important;
     top: auto !important;
@@ -57,7 +66,7 @@
     height: 16px !important;
   }
 
-  .sc-deEcOf.cNQypA button {
+  .list-view-player-info button {
     flex-shrink: 0 !important; /* Prevent buttons from shrinking */
     width: 16px !important;
     height: 16px !important;
@@ -66,22 +75,15 @@
   }
 
   /* Resize ALL icons inside buttons */
-  .sc-deEcOf.cNQypA button img {
+  .list-view-player-info button img {
     width: 16px !important;
     height: 16px !important;
     max-width: none !important;
     max-height: none !important;
-  }
-}
-
-@media (max-width: 1080px) { /* Adjust width threshold if needed */
-  .sc-kHonzX.faEnRu {
-    position: relative;
-    top: 4px; /* Move the container slightly down */
   }
 
   /* Resize ALL buttons inside */
-  .sc-kHonzX.faEnRu button {
+  .player-info button {
     flex-shrink: 0 !important; /* Prevent buttons from shrinking */
     width: 16px !important;
     height: 16px !important;
@@ -90,7 +92,7 @@
   }
 
   /* Resize ALL icons inside buttons */
-  .sc-kHonzX.faEnRu button img {
+  .player-info button img {
     width: 16px !important;
     height: 16px !important;
     max-width: none !important;
