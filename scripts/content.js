@@ -136,31 +136,24 @@ function showPlayerPanel(playerSection, button) {
   }
 
   let playerName; // Declare playerName before the if statement
-  if (button.className === "pigpanel-info-btn-outTeam") {
-    if (playerSection.innerText) {
-      const playerData = playerSection.innerText;
-      const playerDataSplit = playerData.split("\n");
-      const playerNameWithInitial = playerDataSplit[0].trim();
-      const playerPrice = playerDataSplit[3].trim();
-  
-      playerName = confirmFullName(playerNameWithInitial, playerPrice);
-      console.log("Extracted text:", playerName); 
-    } else {
-      console.warn("⚠️ No playerName inside:", playerSection);
-    }
+  let lines;
+  if (playerSection.classList.contains("Flipcard-front")) {
+    lines = playerSection.innerText.split("\n"); // Split by new lines
+    console.log("InL: " + lines[5]);
+    playerName = lines[5].trim();
+  } else if (playerSection.classList.contains("list-view-player-info")) {
+    lines = playerSection.innerText.split("\n"); // Split by new lines
+    console.log("InS: " + lines[0]);
+    playerName = lines[0].trim();
   } else {
-    if (playerSection.classList.contains("sc-erIqft")) {
-      playerName = playerSection.innerText; // ✅ Large In Team
-      console.log("Extracted text:", playerName);
+    lines = playerSection.innerText.split("\n"); // Split by new lines
+    console.log("Out: " + lines[0]);
+    if (lines[0].includes(".")) {
+      playerName = confirmFullName(lines[0].trim());
     } else {
-      const fullSpan = playerSection.parentNode.querySelector(".full");
-      if (fullSpan) {
-        playerName = fullSpan.textContent.trim();
-        console.log("Extracted text:", playerName);
-      } else {
-        console.warn("⚠️ No `.full` span found inside:", playerSection);
-      }
+      playerName = lines[0].trim();
     }
+    
   }
 
   // Create a new panel
