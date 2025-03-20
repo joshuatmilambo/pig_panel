@@ -1,16 +1,16 @@
 {
   "name" : "Pig Panel",
   "description" : "Base Level Extension",
-  "version" : "1.0",
+  "version" : "1.0.0",
   "manifest_version" : 3,
   "content_scripts" : [
     {
-      "matches" : ["https://fantasy.afl.com.au/*"],
+      "matches" : ["https://fantasy.afl.com.au/classic/team"],
       "js": ["scripts/content.js"],
       "css": ["styles.css"]
     },
     {
-      "matches": ["https://dfsaustralia.com/*"],
+      "matches": ["https://dfsaustralia.com/afl-fantasy-player-summary/*"],
       "js": ["scripts/dfs-content.js"],
       "run_at": "document_idle"
     },
