@@ -139,15 +139,20 @@ function showPlayerPanel(playerSection, button) {
   let lines;
   if (playerSection.classList.contains("Flipcard-front")) {
     lines = playerSection.innerText.split("\n"); // Split by new lines
-    console.log("InL: " + lines[5]);
+    console.log("InL: " + lines);
     playerName = lines[5].trim();
   } else if (playerSection.classList.contains("list-view-player-info")) {
     lines = playerSection.innerText.split("\n"); // Split by new lines
-    console.log("InS: " + lines[0]);
-    playerName = lines[0].trim();
+    console.log("InS: " + lines);
+    if (window.innerWidth < 620) {
+      console.log("Page width is less than 620px");
+      playerName = confirmFullName(lines[0].trim(), lines[2]);
+    } else {
+      playerName = lines[0].trim();
+    }
   } else {
     lines = playerSection.innerText.split("\n"); // Split by new lines
-    console.log("Out: " + lines[0]);
+    console.log("Out: " + lines);
     if (lines[0].includes(".")) {
       playerName = confirmFullName(lines[0].trim(), lines[3]);
     } else {
