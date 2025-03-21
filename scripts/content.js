@@ -178,7 +178,7 @@ function showPlayerPanel(playerSection, button) {
           
           // Check if the element is actually being removed
           if (mutation.removedNodes.length > 0 && [...mutation.removedNodes].includes(playerSection)) {
-              console.log("⚠️ Player card removed! Closing panel.");
+              console.log("Player card removed! Closing panel.");
               cleanupPanel(panel, parentObserver);
               return;
           }
@@ -186,7 +186,7 @@ function showPlayerPanel(playerSection, button) {
           // Ignore non-relevant mutations
           if (mutation.type === "attributes" && mutation.attributeName !== "class") continue;
   
-          console.log("⚠️ Significant player card change detected! Closing panel.");
+          console.log("Significant player card change detected! Closing panel.");
           cleanupPanel(panel, parentObserver);
           return; // Exit to avoid unnecessary checks
       }
@@ -198,7 +198,7 @@ function showPlayerPanel(playerSection, button) {
       action: () => {
       console.log(`DFS Button Clicked! Searching for ${playerName}`);
       chrome.storage.local.set({ selectedPlayerName: playerName }, () => {
-        console.log("✅ Player name stored in Chrome storage.");
+        console.log("Player name stored in Chrome storage.");
         window.open("https://dfsaustralia.com/afl-fantasy-player-summary/", "_blank");
         })
       }
@@ -209,7 +209,7 @@ function showPlayerPanel(playerSection, button) {
         console.log(`FW Button Clicked! Searching for ${playerName}`);
     
         chrome.storage.local.set({ selectedPlayerName: playerName }, () => {
-          console.log("✅ Player name stored in Chrome storage.");
+          console.log("Player name stored in Chrome storage.");
           
           const nameParts = playerName.trim().split(" ");
           const firstName = nameParts[0];
@@ -226,7 +226,7 @@ function showPlayerPanel(playerSection, button) {
 
   buttonData.forEach((btnData, index) => {
     if (!btnData.label && !btnData.imgSrc) {
-        console.warn(`⚠️ Skipping button at ${btnData.gridArea || index} - Missing label and imgSrc`);
+        console.warn(`Skipping button at ${btnData.gridArea || index} - Missing label and imgSrc`);
         return;
     }
 
@@ -247,13 +247,13 @@ function showPlayerPanel(playerSection, button) {
 
     // Assign custom action for each button
     btn.addEventListener("click", () => {
-        console.log(`🟢 Clicked button: ${btnData.label || btnData.imgSrc || "Unknown"}`);
+        console.log(`Clicked button: ${btnData.label || btnData.imgSrc || "Unknown"}`);
   
         if (btnData.action) {
             try {
                 btnData.action();
             } catch (error) {
-                console.error(`❌ Error executing action for ${btnData.label || btnData.imgSrc}:`, error);
+                console.error(`Error executing action for ${btnData.label || btnData.imgSrc}:`, error);
             }
         }
   
@@ -282,7 +282,7 @@ function cleanupPanel(panel, observer) {
 }
 
 function updatePanelPosition(button, panel) {
-  if (!panel || !button) return; // ✅ Exit if panel or button doesn't exist
+  if (!panel || !button) return; // Exit if panel or button doesn't exist
 
   const buttonRect = button.getBoundingClientRect();
   const panelSize = 100;
@@ -292,14 +292,14 @@ function updatePanelPosition(button, panel) {
 
 function confirmFullName(playerText, playerPriceText) {
   if (!playersData) {
-    console.error("❌ Player data not loaded yet.");
+    console.error("Player data not loaded yet.");
     return null;
   }
 
-  // ✅ Extract first initial & last name
+  // Extract first initial & last name
   const nameParts = playerText.trim().split(" ");
   if (nameParts.length !== 2 || !nameParts[0].endsWith(".")) {
-    console.error(`❌ Invalid player format: "${playerText}"`);
+    console.error(`Invalid player format: "${playerText}"`);
     return null;
   }
 
@@ -308,16 +308,16 @@ function confirmFullName(playerText, playerPriceText) {
 
   const uiPrice = parseFloat(playerPriceText.replace(/[^0-9.]/g, "")) * 1000;
 
-  console.log(`🔍 Searching for: ${firstInitial}. ${playerLastName}, Price: ${uiPrice}`);
+  console.log(`Searching for: ${firstInitial}. ${playerLastName}, Price: ${uiPrice}`);
   
-  // 🔎 LOG all players with matching last name BEFORE filtering further
+  // LOG all players with matching last name BEFORE filtering further
   const potentialMatches = Object.values(playersData).filter(player => 
     player.last_name.toLowerCase() === playerLastName.toLowerCase()
   );
 
-  console.log(`🟡 Found ${potentialMatches.length} players with last name '${playerLastName}':`, potentialMatches);
+  console.log(`Found ${potentialMatches.length} players with last name '${playerLastName}':`, potentialMatches);
 
-  // ✅ Find exact match using `.find()`
+  // Find exact match using `.find()`
   const match = potentialMatches.find(player => 
     player.first_name.charAt(0).toLowerCase() === firstInitial.toLowerCase() &&
     Math.abs(player.cost - uiPrice) <= 1000
@@ -326,9 +326,9 @@ function confirmFullName(playerText, playerPriceText) {
   if (match) {
     const fullName = `${match.first_name} ${match.last_name}`;
     console.log(`Search Complete: ${fullName} (ID: ${match.id}, Price: ${match.cost})`);
-    return fullName; // ✅ Ensure it's a string
+    return fullName; // Ensure it's a string
   } else {
-    console.error(`❌ No exact match found.`);
+    console.error(`No exact match found.`);
     return "Unknown Player"; // Return a fallback string
   }
 }
