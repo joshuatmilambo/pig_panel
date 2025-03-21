@@ -149,7 +149,7 @@ function showPlayerPanel(playerSection, button) {
     lines = playerSection.innerText.split("\n"); // Split by new lines
     console.log("Out: " + lines[0]);
     if (lines[0].includes(".")) {
-      playerName = confirmFullName(lines[0].trim());
+      playerName = confirmFullName(lines[0].trim(), lines[3]);
     } else {
       playerName = lines[0].trim();
     }
