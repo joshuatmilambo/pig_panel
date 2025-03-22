@@ -1,17 +1,15 @@
 console.log("dfs-content.js is running!");
 
 function runWhenReady() {
-  if (document.readyState === "complete") {
-    console.log("DFS page fully loaded!");
-    startPlayerSelection();
-  } else {
-    console.log("DFS page still loading... waiting...");
-    document.addEventListener("readystatechange", () => {
-      if (document.readyState === "complete") {
-        console.log("DFS page fully loaded on second check!");
-        startPlayerSelection();
-      }
+  if (document.readyState === "loading") {
+    console.log("DFS page is loading... waiting for DOMContentLoaded...");
+    document.addEventListener("DOMContentLoaded", () => {
+      console.log("DFS DOM fully loaded!");
+      startPlayerSelection();
     });
+  } else {
+    console.log("DFS DOM already ready!");
+    startPlayerSelection();
   }
 }
 
