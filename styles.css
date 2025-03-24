@@ -52,39 +52,40 @@
   top: 2px !important;
 }
 
+.list-view-player-info {
+  position: relative !important;
+}
+
+.list-view-player-info .pigpanel-info-btn-inTeam {
+  position: relative !important;
+  top: auto !important;
+  left: 0 !important;;
+  margin-top: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 16px !important;
+  height: 16px !important;
+}
+
+.list-view-player-info button {
+  flex-shrink: 0 !important; /* Prevent buttons from shrinking */
+  width: 16px !important;
+  height: 16px !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* Resize ALL icons inside buttons */
+.list-view-player-info button img {
+  width: 16px !important;
+  height: 16px !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
 /* In team small page */
 @media (max-width: 1080px) { /* Adjust width threshold if needed */
-  .list-view-player-info {
-    position: relative !important;
-  }
-
-  .list-view-player-info .pigpanel-info-btn-inTeam {
-    position: relative !important;
-    top: auto !important;
-    left: 0 !important;;
-    margin-top: 0 !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 16px !important;
-    height: 16px !important;
-  }
-
-  .list-view-player-info button {
-    flex-shrink: 0 !important; /* Prevent buttons from shrinking */
-    width: 16px !important;
-    height: 16px !important;
-    max-width: none !important;
-    max-height: none !important;
-  }
-
-  /* Resize ALL icons inside buttons */
-  .list-view-player-info button img {
-    width: 16px !important;
-    height: 16px !important;
-    max-width: none !important;
-    max-height: none !important;
-  }
 
   /* Resize ALL buttons inside */
   .player-info button {

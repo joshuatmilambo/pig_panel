@@ -5,7 +5,7 @@
   "manifest_version" : 3,
   "content_scripts" : [
     {
-      "matches" : ["https://fantasy.afl.com.au/classic/team"],
+      "matches" : ["https://fantasy.afl.com.au/classic/*"],
       "js": ["scripts/content.js"],
       "css": ["styles.css"]
     },
