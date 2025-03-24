@@ -1,7 +1,7 @@
 {
   "name" : "Pig Panel",
   "description" : "Base Level Extension",
-  "version" : "1.0.2",
+  "version" : "1.0.3",
   "manifest_version" : 3,
   "content_scripts" : [
     {
