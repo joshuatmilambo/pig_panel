@@ -144,9 +144,8 @@ function showPlayerPanel(playerSection, button) {
   } else if (playerSection.classList.contains("list-view-player-info")) {
     lines = playerSection.innerText.split("\n"); // Split by new lines
     console.log("InS: " + lines);
-    if (window.innerWidth < 620) {
-      console.log("Page width is less than 620px");
-      playerName = confirmFullName(lines[0].trim(), lines[2]);
+    if (lines[0].includes(".")) {
+      playerName = confirmFullName(lines[0].trim(), lines[4]);
     } else {
       playerName = lines[0].trim();
     }
@@ -306,7 +305,7 @@ function confirmFullName(playerText, playerPriceText) {
   const firstInitial = nameParts[0][0]; // "R"
   const playerLastName = nameParts[1]; // "Marshall"
 
-  const uiPrice = parseFloat(playerPriceText.replace(/[^0-9.]/g, "")) * 1000;
+  const uiPrice = parseFloat(playerPriceText.replace(/[^0-9.]/g, "")) * 1000000;
 
   console.log(`Searching for: ${firstInitial}. ${playerLastName}, Price: ${uiPrice}`);
   
