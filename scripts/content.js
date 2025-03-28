@@ -305,7 +305,19 @@ function confirmFullName(playerText, playerPriceText) {
   const firstInitial = nameParts[0][0]; // "R"
   const playerLastName = nameParts[1]; // "Marshall"
 
-  const uiPrice = parseFloat(playerPriceText.replace(/[^0-9.]/g, "")) * 1000;
+  const regexPrice = playerPriceText.match(/([\d.]+)([MK])/i);
+
+  let uiPrice = 0;
+  if (regexPrice) {
+    const number = parseFloat(regexPrice[1]);
+    const unit = regexPrice[2].toUpperCase();
+  
+    if (unit === "M") {
+      uiPrice = number * 1_000_000;
+    } else if (unit === "K") {
+      uiPrice = number * 1_000;
+    }
+  }
 
   console.log(`Searching for: ${firstInitial}. ${playerLastName}, Price: ${uiPrice}`);
   
