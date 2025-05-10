@@ -1,7 +1,7 @@
 {
   "name" : "Pig Panel",
   "description" : "Pig Panel is a Google Chrome extension designed to provide quick and easy access to the best AFL Fantasy data with a single click.",
-  "version" : "1.0.5",
+  "version" : "1.0.6",
   "manifest_version" : 3,
   "content_scripts" : [
     {
