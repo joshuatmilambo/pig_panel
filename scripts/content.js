@@ -198,7 +198,7 @@ function showPlayerPanel(playerSection, button) {
       console.log(`DFS Button Clicked! Searching for ${playerName}`);
       chrome.storage.local.set({ selectedPlayerName: playerName }, () => {
         console.log("Player name stored in Chrome storage.");
-        window.open("https://dfsaustralia.com/afl-fantasy-player-summary/", "_blank");
+        window.open("https://dfsaustralia.com/afl-fantasy-player-summary/?playerId=CD_I293222", "_blank");
         })
       }
     },
