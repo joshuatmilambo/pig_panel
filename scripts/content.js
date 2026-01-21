@@ -25,15 +25,18 @@ window.addEventListener("load", () => {
 
 function injectInfoButtons() {
   // Select all player sections
-  const playerSectionsInL = document.querySelectorAll("div[class*='Flipcard-front']");
-  const playerSectionsInS = document.querySelectorAll("div[class*='list-view-player-info']");
-  const playerSectionsOut = document.querySelectorAll("div[class*='player-info']");
-  const playerSections = [...playerSectionsInL, ...playerSectionsInS, ...playerSectionsOut];
+  const playerSectionsIn = document.querySelectorAll('div[aria-label="Player information"]');
+  const playerSectionsOut = document.querySelectorAll('[role="gridcell"]');
+  const playerSections = [...playerSectionsIn, ...playerSectionsOut];
+
+  const listViewBtn = document.querySelector('button[aria-label="select list view"]');
+
+  const isListView = listViewBtn && listViewBtn.style.background.includes("var(--color-tertiary-light-sky)");
 
   playerSections.forEach((playerSection) => {
     // Avoid duplicate buttons
     const existingInTeamButton = playerSection.querySelector(".pigpanel-info-btn-inTeam");
-    const existingOutTeamButton = playerSection.parentNode.querySelector(".pigpanel-info-btn-outTeam");
+    const existingOutTeamButton = playerSection.querySelector(".pigpanel-info-btn-outTeam");
 
     if (existingInTeamButton) existingInTeamButton.remove();
     if (existingOutTeamButton) existingOutTeamButton.remove();
@@ -41,13 +44,13 @@ function injectInfoButtons() {
     // Create the info button
     const infoButton = document.createElement("button");
     // Set classnames for CSS
-    if (playerSection.classList.contains("Flipcard-front")) {
-      infoButton.className = "pigpanel-info-btn-inTeam"; // Large In Team
-    } 
-    else if (playerSection.classList.contains("list-view-player-info")) { 
-      infoButton.className = "pigpanel-info-btn-inTeam"; // Small In Team
-    } 
-    else {
+    if (playerSection.matches('[aria-label*="Player information"]')) {
+      if (isListView) {
+        infoButton.className = "pigpanel-info-btn-inTeam pigpanel-rowview"; // List view
+      } else {
+        infoButton.className = "pigpanel-info-btn-inTeam pigpanel-cardview"; // Oval view
+      }
+    } else {
       infoButton.className = "pigpanel-info-btn-outTeam"; // Out Team
     }
 
@@ -76,21 +79,14 @@ function injectInfoButtons() {
     });
 
     // Place buttons in the correct position
-    if (playerSection.classList.contains("Flipcard-front")) {
+    if (playerSection.className == "pigpanel-info-btn-inTeam") {
       if (!playerSection) {
-        console.warn("In_L element not found for:", playerSection);
+        console.warn("In element not found for:", playerSection);
       } else {
         playerSection.appendChild(infoButton);
       }
-    } else if (playerSection.classList.contains("list-view-player-info")) {
-      const buttonsElement = playerSection.children[1];
-      if (!buttonsElement) {
-        console.warn("In_S element not found for:", playerSection);
-      } else {
-        buttonsElement.appendChild(infoButton);
-      }
     } else {
-      const buttonsElement = playerSection.children[1];
+      const buttonsElement = playerSection.children[0];
       if (!buttonsElement) {
         console.warn("Out element not found for:", playerSection);
       } else {
@@ -141,14 +137,6 @@ function showPlayerPanel(playerSection, button) {
     lines = playerSection.innerText.split("\n"); // Split by new lines
     console.log("InL: " + lines);
     playerName = lines[5].trim();
-  } else if (playerSection.classList.contains("list-view-player-info")) {
-    lines = playerSection.innerText.split("\n"); // Split by new lines
-    console.log("InS: " + lines);
-    if (lines[0].includes(".")) {
-      playerName = confirmFullName(lines[0].trim(), lines[4]);
-    } else {
-      playerName = lines[0].trim();
-    }
   } else {
     lines = playerSection.innerText.split("\n"); // Split by new lines
     console.log("Out: " + lines);
