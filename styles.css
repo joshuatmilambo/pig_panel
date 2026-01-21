@@ -7,7 +7,7 @@
 .pigpanel-cardview {
   position: absolute;
   top: 30%; /* Moves button dynamically based on card height */
-  right: 5%; /* Adjusts position relative to card width */
+  right: 6%; /* Adjusts position relative to card width */
   color: white;
   border: none;
   background: none;

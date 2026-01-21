@@ -4,7 +4,7 @@ async function fetchPlayersData() {
   if (playersData) return playersData; // If already loaded, return it
 
   // Need to sanitise
-  const response = await fetch("https://fantasy.afl.com.au/data/afl/players.json");
+  const response = await fetch("https://fantasy.afl.com.au/json/fantasy/players.json");
   playersData = await response.json();
   console.log("Player data loaded!");
   return playersData;
@@ -133,19 +133,14 @@ function showPlayerPanel(playerSection, button) {
 
   let playerName; // Declare playerName before the if statement
   let lines;
-  if (playerSection.classList.contains("Flipcard-front")) {
+  if (button.className == "pigpanel-info-btn-inTeam pigpanel-cardview") {
     lines = playerSection.innerText.split("\n"); // Split by new lines
-    console.log("InL: " + lines);
-    playerName = lines[5].trim();
+    console.log("InCard: " + lines);
+    playerName = confirmFullName(lines[0].trim(), lines[6]);
   } else {
     lines = playerSection.innerText.split("\n"); // Split by new lines
-    console.log("Out: " + lines);
-    if (lines[0].includes(".")) {
-      playerName = confirmFullName(lines[0].trim(), lines[3]);
-    } else {
-      playerName = lines[0].trim();
-    }
-    
+    console.log("InRow: " + lines);
+    playerName = confirmFullName(lines[0].trim(), lines[3]);
   }
 
   // Create a new panel
@@ -311,20 +306,20 @@ function confirmFullName(playerText, playerPriceText) {
   
   // LOG all players with matching last name BEFORE filtering further
   const potentialMatches = Object.values(playersData).filter(player => 
-    player.last_name.toLowerCase() === playerLastName.toLowerCase()
+    player.lastName.toLowerCase() === playerLastName.toLowerCase()
   );
 
   console.log(`Found ${potentialMatches.length} players with last name '${playerLastName}':`, potentialMatches);
 
   // Find exact match using `.find()`
   const match = potentialMatches.find(player => 
-    player.first_name.charAt(0).toLowerCase() === firstInitial.toLowerCase() &&
-    Math.abs(player.cost - uiPrice) <= 1000
+    player.firstName.charAt(0).toLowerCase() === firstInitial.toLowerCase() &&
+    Math.abs(player.price - uiPrice) <= 1000
   );
 
   if (match) {
-    const fullName = `${match.first_name} ${match.last_name}`;
-    console.log(`Search Complete: ${fullName} (ID: ${match.id}, Price: ${match.cost})`);
+    const fullName = `${match.firstName} ${match.lastName}`;
+    console.log(`Search Complete: ${fullName} (ID: ${match.id}, Price: ${match.price})`);
     return fullName; // Ensure it's a string
   } else {
     console.error(`No exact match found.`);
