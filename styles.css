@@ -23,7 +23,7 @@
 .pigpanel-rowview {
   position: absolute;
   top: 30%; /* Moves button dynamically based on card height */
-  left: 25%; /* Adjusts position relative to card width */
+  left: 18%; /* Adjusts position relative to card width */
   color: white;
   border: none;
   background: none;
@@ -37,7 +37,7 @@
 @media screen and (max-width: 1279px) {
   .pigpanel-info-btn-inTeam {
     position: absolute !important;
-    left: 140px !important; 
+    left: 185px !important; 
     top: 50% !important;
     transform: translateY(-50%) !important;
     margin: 0 !important;
