@@ -4,7 +4,7 @@ async function fetchPlayersData() {
   if (playersData) return playersData; // If already loaded, return it
 
   // Need to sanitise
-  const response = await fetch("https://fantasy.afl.com.au/data/afl/players.json");
+  const response = await fetch("https://fantasy.afl.com.au/json/fantasy/players.json");
   playersData = await response.json();
   console.log("Player data loaded!");
   return playersData;
@@ -25,15 +25,18 @@ window.addEventListener("load", () => {
 
 function injectInfoButtons() {
   // Select all player sections
-  const playerSectionsInL = document.querySelectorAll("div[class*='Flipcard-front']");
-  const playerSectionsInS = document.querySelectorAll("div[class*='list-view-player-info']");
-  const playerSectionsOut = document.querySelectorAll("div[class*='player-info']");
-  const playerSections = [...playerSectionsInL, ...playerSectionsInS, ...playerSectionsOut];
+  const playerSectionsIn = document.querySelectorAll('div[aria-label="Player information"]');
+  const playerSectionsOut = document.querySelectorAll('[role="gridcell"]');
+  const playerSections = [...playerSectionsIn, ...playerSectionsOut];
+
+  const listViewBtn = document.querySelector('button[aria-label="select list view"]');
+
+  const isListView = listViewBtn && listViewBtn.style.background.includes("var(--color-tertiary-light-sky)");
 
   playerSections.forEach((playerSection) => {
     // Avoid duplicate buttons
     const existingInTeamButton = playerSection.querySelector(".pigpanel-info-btn-inTeam");
-    const existingOutTeamButton = playerSection.parentNode.querySelector(".pigpanel-info-btn-outTeam");
+    const existingOutTeamButton = playerSection.querySelector(".pigpanel-info-btn-outTeam");
 
     if (existingInTeamButton) existingInTeamButton.remove();
     if (existingOutTeamButton) existingOutTeamButton.remove();
@@ -41,13 +44,13 @@ function injectInfoButtons() {
     // Create the info button
     const infoButton = document.createElement("button");
     // Set classnames for CSS
-    if (playerSection.classList.contains("Flipcard-front")) {
-      infoButton.className = "pigpanel-info-btn-inTeam"; // Large In Team
-    } 
-    else if (playerSection.classList.contains("list-view-player-info")) { 
-      infoButton.className = "pigpanel-info-btn-inTeam"; // Small In Team
-    } 
-    else {
+    if (playerSection.matches('[aria-label*="Player information"]')) {
+      if (isListView) {
+        infoButton.className = "pigpanel-info-btn-inTeam pigpanel-rowview"; // List view
+      } else {
+        infoButton.className = "pigpanel-info-btn-inTeam pigpanel-cardview"; // Oval view
+      }
+    } else {
       infoButton.className = "pigpanel-info-btn-outTeam"; // Out Team
     }
 
@@ -76,26 +79,10 @@ function injectInfoButtons() {
     });
 
     // Place buttons in the correct position
-    if (playerSection.classList.contains("Flipcard-front")) {
-      if (!playerSection) {
-        console.warn("In_L element not found for:", playerSection);
-      } else {
-        playerSection.appendChild(infoButton);
-      }
-    } else if (playerSection.classList.contains("list-view-player-info")) {
-      const buttonsElement = playerSection.children[1];
-      if (!buttonsElement) {
-        console.warn("In_S element not found for:", playerSection);
-      } else {
-        buttonsElement.appendChild(infoButton);
-      }
+    if (!playerSection) {
+      console.warn("Element not found for:", playerSection);
     } else {
-      const buttonsElement = playerSection.children[1];
-      if (!buttonsElement) {
-        console.warn("Out element not found for:", playerSection);
-      } else {
-        buttonsElement.appendChild(infoButton);
-      }
+      playerSection.appendChild(infoButton);
     }
   });
 }
@@ -137,27 +124,14 @@ function showPlayerPanel(playerSection, button) {
 
   let playerName; // Declare playerName before the if statement
   let lines;
-  if (playerSection.classList.contains("Flipcard-front")) {
+  if (button.className == "pigpanel-info-btn-inTeam pigpanel-cardview") {
     lines = playerSection.innerText.split("\n"); // Split by new lines
-    console.log("InL: " + lines);
-    playerName = lines[5].trim();
-  } else if (playerSection.classList.contains("list-view-player-info")) {
-    lines = playerSection.innerText.split("\n"); // Split by new lines
-    console.log("InS: " + lines);
-    if (lines[0].includes(".")) {
-      playerName = confirmFullName(lines[0].trim(), lines[4]);
-    } else {
-      playerName = lines[0].trim();
-    }
+    console.log("InCard: " + lines);
+    playerName = confirmFullName(lines[0].trim(), lines[6]);
   } else {
     lines = playerSection.innerText.split("\n"); // Split by new lines
-    console.log("Out: " + lines);
-    if (lines[0].includes(".")) {
-      playerName = confirmFullName(lines[0].trim(), lines[3]);
-    } else {
-      playerName = lines[0].trim();
-    }
-    
+    console.log("InRow: " + lines);
+    playerName = confirmFullName(lines[0].trim(), lines[3]);
   }
 
   // Create a new panel
@@ -323,20 +297,20 @@ function confirmFullName(playerText, playerPriceText) {
   
   // LOG all players with matching last name BEFORE filtering further
   const potentialMatches = Object.values(playersData).filter(player => 
-    player.last_name.toLowerCase() === playerLastName.toLowerCase()
+    player.lastName.toLowerCase() === playerLastName.toLowerCase()
   );
 
   console.log(`Found ${potentialMatches.length} players with last name '${playerLastName}':`, potentialMatches);
 
   // Find exact match using `.find()`
   const match = potentialMatches.find(player => 
-    player.first_name.charAt(0).toLowerCase() === firstInitial.toLowerCase() &&
-    Math.abs(player.cost - uiPrice) <= 1000
+    player.firstName.charAt(0).toLowerCase() === firstInitial.toLowerCase() &&
+    Math.abs(player.price - uiPrice) <= 1000
   );
 
   if (match) {
-    const fullName = `${match.first_name} ${match.last_name}`;
-    console.log(`Search Complete: ${fullName} (ID: ${match.id}, Price: ${match.cost})`);
+    const fullName = `${match.firstName} ${match.lastName}`;
+    console.log(`Search Complete: ${fullName} (ID: ${match.id}, Price: ${match.price})`);
     return fullName; // Ensure it's a string
   } else {
     console.error(`No exact match found.`);
