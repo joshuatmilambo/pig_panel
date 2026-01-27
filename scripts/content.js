@@ -79,19 +79,10 @@ function injectInfoButtons() {
     });
 
     // Place buttons in the correct position
-    if (playerSection.className == "pigpanel-info-btn-inTeam") {
-      if (!playerSection) {
-        console.warn("In element not found for:", playerSection);
-      } else {
-        playerSection.appendChild(infoButton);
-      }
+    if (!playerSection) {
+      console.warn("Element not found for:", playerSection);
     } else {
-      const buttonsElement = playerSection.children[0];
-      if (!buttonsElement) {
-        console.warn("Out element not found for:", playerSection);
-      } else {
-        buttonsElement.appendChild(infoButton);
-      }
+      playerSection.appendChild(infoButton);
     }
   });
 }

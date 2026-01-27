@@ -11,7 +11,6 @@
   color: white;
   border: none;
   background: none;
-  padding-top: 15px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -115,7 +114,6 @@
   height: 100px;
   background: rgba(255, 255, 255, 0); /* Fully transparent */
   border: none;
-  border-radius: 10px;
   padding: 5px;
   z-index: 1000; /* Panel is beneath buttons */
   display: grid;
@@ -132,7 +130,8 @@
   height: 30px;
   font-size: 18px;
   border-radius: 50%;
-  border: none;
+  border: 2px solid #A2A0A0; /* black border */
+  box-sizing: border-box; /* keeps size consistent */
   cursor: pointer;
   background: #eee;
   pointer-events: auto; /* ✅ Allows clicking the buttons */
@@ -146,6 +145,6 @@
 
 /* 🔹 Hover effect for buttons */
 .pigpanel-panel-grid-btn:hover {
-  background: #ccc; /* Slightly darker background on hover */
+  background: #FFAAB4; /* Slightly darker background on hover */
   transform: scale(1.1); /* Small scaling effect for feedback */
 }
