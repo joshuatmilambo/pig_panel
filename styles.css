@@ -159,6 +159,7 @@
 .ext-dark-mode svg,
 .ext-dark-mode iframe,
 .ext-dark-mode .mr-1,
-.ext-dark-mode .h-4 {
+.ext-dark-mode .h-4,
+.ext-dark-mode .MuiButtonBase-root {
   filter: invert(1) hue-rotate(180deg);
 }
