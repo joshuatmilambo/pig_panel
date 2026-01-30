@@ -10,17 +10,29 @@ async function fetchPlayersData() {
   return playersData;
 }
 
-// Load the players data **ONCE** when the page loads
-window.addEventListener("load", async () => {
-  await fetchPlayersData();
-});
+function applyDarkMode(enabled) {
+  document.documentElement.classList.toggle("ext-dark-mode", enabled);
+}
 
 // Wait for page to load
 window.addEventListener("load", () => {
+  fetchPlayersData();
   setTimeout(() => {
     injectInfoButtons();
     observeDynamicChanges();
   }, 1000);
+});
+
+//initial state
+chrome.storage.sync.get("darkMode", ({ darkMode }) => {
+  applyDarkMode(darkMode);
+});
+
+//listen for changes
+chrome.storage.onChanged.addListener((changes) => {
+  if (changes.darkMode) {
+    applyDarkMode(changes.darkMode.newValue);
+  }
 });
 
 function injectInfoButtons() {
@@ -57,7 +69,7 @@ function injectInfoButtons() {
     // Create image element for the icon
     const iconImg = document.createElement("img");
     iconImg.className = "pigpanel-info-btn-icon"
-    iconImg.src = chrome.runtime.getURL("images/pig_48.png"); // load from extension
+    iconImg.src = chrome.runtime.getURL("../images/pig_48.png"); // load from extension
     iconImg.alt = "Info";
 
     // Append image to button

@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last Updated: 20/03/25**
+**Last Updated: 30/01/26**
 
 This Chrome extension does not collect, store, or share any personal data.
 

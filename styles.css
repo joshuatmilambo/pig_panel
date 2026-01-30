@@ -148,3 +148,17 @@
   background: #FFAAB4; /* Slightly darker background on hover */
   transform: scale(1.1); /* Small scaling effect for feedback */
 }
+
+.ext-dark-mode {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+/* Undo the effect for images, but only while ext-dark-mode is active */
+.ext-dark-mode img,
+.ext-dark-mode video,
+.ext-dark-mode svg,
+.ext-dark-mode iframe,
+.ext-dark-mode .mr-1,
+.ext-dark-mode .h-4 {
+  filter: invert(1) hue-rotate(180deg);
+}
