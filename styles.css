@@ -160,6 +160,10 @@
 .ext-dark-mode iframe,
 .ext-dark-mode .mr-1,
 .ext-dark-mode .h-4,
-.ext-dark-mode .MuiButtonBase-root {
+.ext-dark-mode .MuiButtonBase-root,
+.ext-dark-mode .bg-position-defence,
+.ext-dark-mode .bg-position-mid,
+.ext-dark-mode .bg-position-ruck,
+.ext-dark-mode .bg-position-forward {
   filter: invert(1) hue-rotate(180deg);
 }
