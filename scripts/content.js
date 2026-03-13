@@ -139,7 +139,7 @@ function showPlayerPanel(playerSection, button) {
   if (button.className == "pigpanel-info-btn-inTeam pigpanel-cardview") {
     lines = playerSection.innerText.split("\n"); // Split by new lines
     console.log("InCard: " + lines);
-    playerName = confirmFullName(lines[0].trim(), lines[6]);
+    playerName = confirmFullName(lines[1].trim(), lines[7]);
   } else {
     lines = playerSection.innerText.split("\n"); // Split by new lines
     console.log("InRow: " + lines);
